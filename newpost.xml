@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="style/xhtml.xsl" type="text/xsl"?>
+<xhtml>
+	<form id="postform" action="mgr.php?act=add" method="post">
+		<table style="margin: auto">
+			<caption>
+				<h1>新建日志</h1>
+			</caption>
+			<tr>
+				<td>
+					标题：
+				</td>
+				<td>
+					<input id="title_field" name="title" maxlength="30" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					时间：
+				</td>
+				<td>
+					<input id="datetime_field" name="datetime" maxlength="20" value="当前日期时间"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					作者：
+				</td>
+				<td>
+					<input id="author_field" name="author" maxlength="20"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					分类：
+				</td>
+				<td>
+					<input id="category_field" maxlength="10" name="category" value="默认分类" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					标签：
+				</td>
+				<td>
+					<input id="tags_field" name="tags" maxlength="100" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					概要：
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<textarea id="summary_field" name="summary" rows="4" cols="25"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					内容：
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<textarea id="content_field" name="content" rows="10" cols="25"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="submit" value="提交"/>
+				</td>
+				<td>
+					<input type="submit" value="清除"/>
+				</td>
+			</tr>
+		</table>
+	</form>
+	<script type="text/javascript">
+		<![CDATA[
+var theform = document.getElementById('postform');
+var title = document.getElementById('title_field');
+var author = document.getElementById('author_field');
+var datetime = document.getElementById('datetime_field');
+var summary = document.getElementById('summary_field');
+var content = document.getElementById('content_field');
+String.prototype.size = function() {
+	return this.replace(/[^\x00-\xff]/g, "rr").length;
+};
+theform.onsubmit = function() {
+	if (title.value.size() < 3) {
+		alert('请输入正确的标题！')
+		title.focus();
+		return false;
+	} else if (author.value.size() < 3) {
+		alert('请输入正确的作者名！')
+		author.focus();
+		return false;
+	} else if (summary.value.length == 0) {
+		alert('请输入概要！')
+		summary.focus();
+		return false;
+	} else if (content.value.length == 0) {
+		alert('请输入内容！')
+		content.focus();
+		return false;
+	} else {
+		if (/[^\x00-\xff]/.test(datetime.value))
+			datetime.value = 'now';
+	}
+}
+		]]>
+	</script>
+</xhtml>
