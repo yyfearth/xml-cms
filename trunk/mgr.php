@@ -26,7 +26,7 @@ class Post {
 			$xml = new DOMDocument('1.0', 'utf-8');
 			if (!$xml->loadXML("<$name>$val</$name>"))
 				$val = self::xmlStringSafe($val);
-			return "<summary>$val</summary>";
+			return "<$name>$val</$name>";
 		} else return '';
 	}
 
@@ -35,7 +35,7 @@ class Post {
 		$this->year = $this->post->datetime['year'];
 		$this->month = $this->post->datetime['month'];
 		$this->day = $this->post->datetime['day'];
-		$this->title = $this->post->datetime['title'];
+		$this->title = $this->post->title;
 	}
 
 	public function create($params_array = null) { // $params_array = $_POST
@@ -207,12 +207,12 @@ class Calendar extends DOMDocument {
 
 	public function exists($post) { // chk id
 		$id = $post->id;
-		return ($this->xpath->query("/descendant::post[@id='$id']")->length > 0);
+		return ($this->xpath->evaluate("count(/descendant::post[@id='$id'])") > 0);
 	}
 
 	public function titleDuplicate($post) { // chk title
 		$title = $post->title;
-		return ($this->xpath->query("/descendant::post[title='$title']")->length > 0);
+		return ($this->xpath->evaluate("count(/descendant::post[title='$title'])") > 0);
 	}
 
 	public function add($post) { // main method
@@ -225,22 +225,15 @@ class Calendar extends DOMDocument {
 		$year = $post->year;
 		$month = $post->month;
 		$day = $post->day;
-		// create posthead
-		$posthead = $this->createElement('post');
-		$posthead->setAttribute('id', $post->id); // @id
-		$posthead->setIdAttribute('id', true);
-		// title -> datetime -> author -> category
-		$postnode = dom_import_simplexml($post->post);
-		$n = $postnode->firstChild;
-		$c = 4;
-		while ($c--) {
-			$posthead->appendChild($this->importNode($n, true));
-			$n = $n->nextSibling;
-		}
+		// create postheader clone post
+		$postheader = $this->importNode(dom_import_simplexml($post->post), true);
+		// remove content & summary to get produce postheader
+		$postheader->removeChild($postheader->lastChild);
+		$postheader->removeChild($postheader->lastChild);
 		// search node to nested
 		$daynode = $this->getDayNode($year, $month, $day, true);
 		// insert new post
-		$daynode->insertBefore($posthead, $daynode->firstChild);
+		$daynode->insertBefore($postheader, $daynode->firstChild);
 		// save post.xml
 		$post->writexml();
 		// create year.xml
@@ -284,7 +277,7 @@ class Calendar extends DOMDocument {
 			// update lastupdate.xml
 			$this->lastupdate();
 		} else {
-			throw new Exception('del:post_not_exist');
+			throw new Exception('post_not_exist');
 		}
 	}
 
@@ -478,7 +471,7 @@ function printxml($xml, $die = false) {
 	else die($xml);
 }
 
-if (isset($_COOKIE['session_id']) &&
+if (isset ($_COOKIE['session_id']) &&
 	strlen($_COOKIE['session_id']) == 32)
 	session_id($_COOKIE['session_id']);
 @session_start();
@@ -490,7 +483,7 @@ header ("Pragma: no-cache"); // HTTP/1.0
 if (array_key_exists('req', $_GET)) {
 	switch($_GET['req']) {
 		case 'admin':
-			if (!array_key_exists('admin', $_SESSION)) {
+			if (!isset ($_SESSION['admin'])) {
 				echo '<err>not_login</err>';
 			} else {
 				$admin = $_SESSION['admin'];
@@ -504,7 +497,7 @@ if (array_key_exists('req', $_GET)) {
 		default:
 			echo "<err>bad_req</err>";
 	}
-} elseif (isset($_GET['act'])) {
+} elseif (isset ($_GET['act'])) {
 	switch($_GET['act']) {
 		case 'login':
 			if (!array_key_exists('user',$_GET) ||
@@ -536,7 +529,7 @@ if (array_key_exists('req', $_GET)) {
 			}
 			break;
 		case 'logout':
-			if (isset($_SESSION['admin'])) {
+			if (isset ($_SESSION['admin'])) {
 				unset($_SESSION['admin']);
 				//session_destroy();
 				setcookie('session_id');
@@ -546,34 +539,71 @@ if (array_key_exists('req', $_GET)) {
 			}
 			break;
 		case 'add':
-			if (!array_key_exists('admin', $_SESSION))
-				printxml ('<err>管理员未登录</err>', true);
+			if (!isset ($_SESSION['admin']))
+				printxml ('<err href="mgr.xml">管理员未登录</err>', true);
 			try {
 				$post = new Post($_POST);
 				$calendar = new Calendar();
 				$calendar->add($post, true);
 				printxml ('<msg href="mgr.xml">日志添加成功！</msg>');
-			} catch(Exception $e) {
-				printxml ('<err>'.$e->getMessage().'</err>');
+			} catch (Exception $e) {
+				switch ($e->getMessage()) {
+					case 'post_exists':
+						$msg = "日志已经存在或日期时间重复！";
+						break;
+					case 'title_duplicate':
+						$msg = "标题不能重复！";
+						break;
+					default:
+						$msg = $e->getMessage();
+				}
+				printxml ("<err href='javascript:history.back()'>$msg</err>");
 			}
 			break;
 		case 'del':
-			if (!array_key_exists('admin', $_SESSION))
-				printxml ('<err>管理员未登录</err>', true);
-			if (array_key_exists('id', $_GET) || !$_GET['id']) {
+			if (!isset ($_SESSION['admin']))
+				printxml ('<err href="mgr.xml">管理员未登录</err>', true);
+			if (isset ($_GET['id']) || $_GET['id']) {
 				try {
 					$calendar = new Calendar();
 					foreach (split(',', $_GET['id']) as $id)
 						$calendar->del($id);
-					echo '<msg href="mgr.xml">日志删除成功！</msg>';
-				} catch(Exception $e) {
-					printxml ('<err>'.$e->getMessage().'</err>');
+					printxml ('<msg href="mgr.xml">日志删除成功！</msg>');
+				} catch (Exception $e) {
+					switch ($e->getMessage()) {
+						case 'post_not_exist':
+							$msg = "要删除的日志不存在！";
+							break;
+						default:
+							$msg = $e->getMessage();
+					}
+					printxml ("<err href='javascript:history.back()'>$msg</err>");
 				}
 			} else {
-				printxml ("<err>要删除的日志不存在！</err>");
+				printxml ("<err href='mgr.xml'>没有要删除的日志！</err>");
 			}
 			break;
+		case 'edt':
+			if (!isset ($_SESSION['admin']))
+				printxml ('<err href="mgr.xml">管理员未登录</err>', true);
+			if (isset ($_GET['id']) || $_GET['id'])
+				echo '<?xml version="1.0" encoding="utf-8" ?>
+<?xml-stylesheet href="style/postedit.xsl" type="text/xsl"?>
+<post id="'.$_GET['id'].'"/>';
+			else printxml ("<err href='mgr.xml'>没有要编辑的日志！</err>");
+			break;
 		case 'mod':
+			if (!isset ($_SESSION['admin']))
+				printxml ('<err href="mgr.xml">管理员未登录</err>', true);
+			if (!isset ($_POST['date']) || !$_POST['date']) {
+				// is mod not upd
+
+				break; // break here
+			} // else goto upd
+		case 'upd':
+			if (!isset ($_SESSION['admin']))
+				printxml ('<err href="mgr.xml">管理员未登录</err>', true);
+			
 			break;
 		default:
 			printxml ("<err>bad_act</err>");
