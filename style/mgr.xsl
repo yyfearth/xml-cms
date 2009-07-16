@@ -285,7 +285,7 @@ username.focus();
 										<td>
 											<a href="javascript:del('{@id}')">删除</a>
 											<xsl:text> </xsl:text>
-											<a href="javascript:mod('{@id}')">修改</a>
+											<a href="mgr.php?act=edt&amp;id={@id}">编辑</a>
 										</td>
 									</tr>
 								</xsl:for-each>
@@ -324,8 +324,10 @@ function del(id) {
 				delids.push(chk.id.match(/\d+/));
 			}
 		}
-		if (confirm('确定删除所选日志吗？'))
-			location.href = "mgr.php?act=del&id=" + delids.join(',')
+		if (delids.length) {
+			if (confirm('确定删除所选的全部日志吗？'))
+				location.href = "mgr.php?act=del&id=" + delids.join(',')
+		} else alert ('没有选择任何日志！');
 	} else {
 		if (confirm('确定删除所选日志吗？'))
 			location.href = "mgr.php?act=del&id=" + id;
