@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- atomic element -->
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="frame.xsl" />
-	<xsl:variable name="postxml" select="document(concat('../',//@id,'.xml'))" />
+	<xsl:variable name="postxml" select="document(concat('../',//@id,'.xml?',generate-id()))" />
 	<xsl:template match="post">
 		<xsl:choose>
 			<xsl:when test="$postxml">
@@ -23,7 +22,7 @@
 							<span id="date_area" class="date" title="编辑日期时间">
 								<xsl:value-of select="concat($post/datetime/@year,'-',$post/datetime/@month,'-',$post/datetime/@day,' ',$post/datetime/@time)" />
 							</span>
-							<input class="date" id="date_field" name="date" maxlength="20" />
+							<input class="date" id="date_field" name="datetime" maxlength="20" />
 							<div class="fixed"></div>
 							<span id="author_area" class="author" title="编辑作者">
 								<xsl:value-of select="$post/author" />
@@ -59,15 +58,17 @@
 							<div class="fixed"></div>
 						</div>
 						<div>
-							<input type="submit" value=" 提交修改 " />
+							<input id="submit" type="submit" value=" 提交修改 " />
 							<input type="button" value=" 放弃修改 " onclick="history.back()" />
 						</div>
 					</form>
 				</div>
 				<script type="text/javascript">
 		<![CDATA[
-var orgval = {}, names = ['title', 'date', 'author', 'category', 'tags', 'summary', 'content'];
+var names = ['title', 'date', 'author', 'category', 'tags', 'summary', 'content'];
 var theform = document.getElementById('editform');
+var submit = document.getElementById('submit');
+submit.disabled = true;
 
 function alterField(name) {
 	var area = document.getElementById(name + '_area');
@@ -101,23 +102,32 @@ function alterField(name) {
 		field.style.display = display;
 		field.focus();
 	};
+	field.edt = false;
+	field.onchange = function () {
+		field.changed = true;
+	}
 	field.onblur = function () {
-		if (field.value)
+		if (field.value && (field.edt || field.changed && confirm('确定修改？'))) {
 			area.innerHTML = field.value;
+			if (!field.edt) {
+				field.edt = true;
+				delete field.changed;
+				field.onchange = null;
+				area.style.border = '1px dashed blue';
+				submit.disabled = false;
+			}
+		}
 		area.style.display = display;
 		field.style.display = 'none';
 	};
-	orgval[name] = ( istextfield ? area.textContent :
-		getXHtml(area.innerHTML.replace(/\s*(<|\/?>)\s*/g, '$1')));
 }
 
 for (var i in names) alterField(names[i]);
 
 theform.onsubmit = function () {
 	for (var i in names) {
-		var field = document.getElementById(name + '_field');
-		var name = names[i];
-		if (orgval[name] == field.value.replace(/\s*(<|\/?>)\s*/g, '$1')) {
+		var field = document.getElementById(names[i] + '_field');
+		if (!field.edt) {
 			field.value = '';
 			field.disabled = true; // not submit
 		}
