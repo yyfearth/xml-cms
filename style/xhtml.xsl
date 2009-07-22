@@ -13,8 +13,8 @@
 				<xsl:when test="@color">
 					<xsl:value-of select="@color" />
 				</xsl:when>
-				<xsl:when test=".=err">red</xsl:when>
-				<xsl:when test=".=msg">blue</xsl:when>
+				<xsl:when test="name(.)='err'">red</xsl:when>
+				<xsl:when test="name(.)='msg'">blue</xsl:when>
 			</xsl:choose>
 		</xsl:variable>
 		<h1 style="color:{$color};text-align:center;margin-top:25px">

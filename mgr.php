@@ -4,12 +4,15 @@ $admin = array ('admin'=>'b025373b15978dfb71eae3696d7d91869000515c');
 //$xml = str_replace( array ('<', '>'), array ('&lt;', '&gt;'), $this->saveXML());
 
 class Post {
-	public $id = null, $post = null, $year, $month, $day, $title, $xml, $empty = true;
+	public $id = null, $post = null, $year, $month, $day, $xml;
+	private $oldid = null;
 
 	public function __construct($post = null) {
-		if (gettype($post) == 'array') {
+		if (gettype($post) == 'array') { // $_POST
 			$this->create($post);
-		} else {
+		} elseif (gettype($post) == 'string' && strlen($post) == 14) { // id
+			$this->load(getid($post));
+		} else { // empty
 			$this->create();
 		}
 	}
@@ -31,11 +34,37 @@ class Post {
 	}
 
 	private function sortcut() {
+		$this->oldid = null;
 		$this->id = $this->post['id'];
 		$this->year = $this->post->datetime['year'];
 		$this->month = $this->post->datetime['month'];
 		$this->day = $this->post->datetime['day'];
-		$this->title = $this->post->title;
+	}
+
+	public function tags($tags) {
+		if (isset($tags)) { // tags to xml
+			$tagxml = '';
+			if ($tags != null && strlen($tags) > 0)
+				foreach (split(',\s*', $tags) as $tag)
+					$tagxml .= "<tag>$tag</tag>";
+			return $tagxml;
+		} elseif ($tags == 'clone' || $tags === true) {
+			$tagxml = '';
+			foreach ($this->post->tag() as $tag)
+				$tagxml .= "<tag>$tag</tag>";
+			return $tagxml;
+		} else { // xml to tags
+			$tags = array();
+			foreach ($this->post->tag() as $tag)
+				array_push($tags, $tag);
+			return join(',', $tags);
+		}
+	}
+
+	public function load($id) {
+		getid($id);
+		$this->post = simplexml_load_file("$id.xml");
+		$this->sortcut();
 	}
 
 	public function create($params_array = null) { // $params_array = $_POST
@@ -48,7 +77,7 @@ class Post {
 			$title =  self::xmlStringSafe($params_array['title']);
 			$author = self::xmlStringSafe($params_array['author']);
 			$category = $this->getParam('category', '默认分类', $params_array);
-			$tags = $this->getParam('tags', '', $params_array);
+			$tags = $this->tags($this->getParam('tags', '', $params_array));
 			// parse datetime: str (YYYY-MM-dd hh:mm:ss) or now
 			$datetime = strtotime($this->getParam('datetime', 'now', $params_array));
 			if (!$datetime) $datetime = strtotime('now');
@@ -57,29 +86,78 @@ class Post {
 			$month = date("m", $datetime);
 			$day = date("d", $datetime);
 			$time = date("H:i:s", $datetime);
-			// tags
-			if ($tags != null && strlen($tags) > 0) {
-				$tagxml = '';
-				foreach (split(',\s*', $tags) as $tag)
-					$tagxml .= "<tag>$tag</tag>";
-				$tags = $tagxml;
-			} else $tags = '';
 			// summary
 			$summary = $this->getXmlParam('summary', $params_array);
 			// content
 			$content = $this->getXmlParam('content', $params_array);
-			$this->empty = false;
 		} else {
 			$title = '';
-			$datetime = '';
+			$year = '';
+			$month = '';
+			$day = '';
+			$time = '';
 			$author = '';
 			$category = '';
 			$tags = '';
 			$summary = '';
 			$content = '';
-			$this->empty = true;
 		}
 		// build xml
+		$this->buildxml(
+			$id, $title, $year, $month, $day, $time,
+			$author, $category, $tags, $summary, $content
+		);
+		return $this->post; // simplexml obj
+	}
+
+	public function update($params_array) { // $params_array = $_POST
+	// $param_array alow every empty
+		if($params_array == null)
+			throw new Exception('nothing_to_update');
+		// param preprocess
+		$title =  $this->getParam('title', $this->post->title, $params_array);
+		$author = $this->getParam('author', $this->post->author, $params_array);
+		$category = $this->getParam('category', $this->post->category, $params_array);
+		$tags = $this->tags($this->getParam('tags', true, $params_array));
+		if (array_key_exists('datetime', $params_array) &&
+			strlen($params_array['datetime'])) {
+			$datetime = strtotime($this->getParam('datetime', 'now', $params_array));
+			if (!$datetime) $datetime = strtotime('now');
+			$id = date("YmdHis", $datetime);
+			$year = date("Y", $datetime);
+			$month = date("m", $datetime);
+			$day = date("d", $datetime);
+			$time = date("H:i:s", $datetime);
+		} else {
+			$id = $this->id;
+			$year =$this->year;
+			$month =$this->month;
+			$day = $this->day;
+			$time =$this->post->datetime['time'];
+		}
+		// summary
+		if (array_key_exists('summary', $params_array) &&
+			strlen($params_array['summary']))
+			$summary = $this->getXmlParam('summary', $params_array);
+		else $summary = $this->post->summary->asXML();
+		// content
+		if (array_key_exists('content', $params_array) &&
+			strlen($params_array['content']))
+			$content = $this->getXmlParam('content', $params_array);
+		else $content = $this->post->content->asXML();
+		// build xml
+		$this->buildxml(
+			$id, $title, $year, $month, $day, $time,
+			$author, $category, $tags, $summary, $content
+		);
+		if ($this->id != $id) $this->oldid = $id;
+		return $this->post; // simplexml obj
+	}
+
+	private function buildxml(
+		$id, $title, $year, $month, $day, $time,
+		$author, $category, $tags, $summary, $content
+	) {
 		try {
 			$this->xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><?xml-stylesheet href=\"style/postview.xsl\" type=\"text/xsl\"?><post id=\"$id\"><title>$title</title><datetime year=\"$year\" month=\"$month\" day=\"$day\" time=\"$time\"/><author>$author</author><category>$category</category>$tags$summary$content</post>";
 			$this->post = simplexml_load_string($this->xml);
@@ -87,28 +165,29 @@ class Post {
 		} catch (Exception $e) {
 			throw new Exception('build_xml_err');
 		}
-		return $this; // simplexml obj
 	}
 
 	public function save() {
+		if ($this->oldid) {
+			self::del($this->oldid);
+			$this->oldid = null;
+		}
 		$this->post->asXML($this->id.'.xml');
 	}
 
-	/*public function xmlexist() {
-		if (!$this->id) {
+	public function xmlexist() {
+		if (!$this->id)
 			throw new Exception('post_not_created');
-		}
 		return file_exists($this->id.'.xml');
 	}
 
 	public function validate() {
-		if ($this->id == null) {
+		if ($this->id == null)
 			throw new Exception('post_not_created');
-		}
 		$xml = new DOMDocument('1.0', 'utf-8');
-		$xml->appendChild(dom_import_simplexml($this));
+		$xml->appendChild(dom_import_simplexml($this->post));
 		return $xml->schemaValidate('schema/post.xsd');
-	}*/
+	}
 
 	public function writexml() {
 		$this->save();
@@ -119,7 +198,7 @@ class Post {
 	}
 
 	public static function del($id) {
-		if (file_exists($id.'.xml')) {
+		if (file_exists(getid($id).'.xml')) {
 			unlink($id.'.xml');
 		}
 	}
@@ -206,13 +285,63 @@ class Calendar extends DOMDocument {
 	}
 
 	public function exists($post) { // chk id
-		$id = $post->id;
+		if (isset($post->id))
+			$post = $post->id;
+		$id = getid($post);
 		return ($this->xpath->evaluate("count(/descendant::post[@id='$id'])") > 0);
 	}
 
 	public function titleDuplicate($post) { // chk title
-		$title = $post->title;
+		$title = $post->post->title;
 		return ($this->xpath->evaluate("count(/descendant::post[title='$title'])") > 0);
+	}
+
+	private function createheader($post) {
+		$postheader = $this->importNode(dom_import_simplexml($post->post), true);
+		// remove content & summary to get produce postheader
+		$postheader->removeChild($postheader->lastChild);
+		$postheader->removeChild($postheader->lastChild);
+		return $postheader;
+	}
+
+	private function change($post, $oldid = null) { // $oldid == null: add
+		if (!$post instanceof Post)
+			throw new Exception('bad_newpost');
+		// build datetime
+		$year = $post->year;
+		$month = $post->month;
+		$day = $post->day;
+		// create postheader
+		$postheader = $this->createheader($post);
+		if (!$oldid) { // add
+		// search node to nested
+			$daynode = $this->getDayNode($year, $month, $day, true);
+			// insert new post
+			$daynode->insertBefore($postheader, $daynode->firstChild);
+			// save post.xml
+			$post->writexml();
+			// create year.xml
+			$this->createYear($year);
+			// update month.xml
+			$month = new Month($year, $month);
+			$month->add($post);
+			// update lastupdate.xml
+			$this->lastupdate();
+		} else { // mod
+			getid($oldid);
+			$oldpost = $this->xpath->query("/descendant::post[@id='$oldid']");
+			if ($oldpost->length) {
+				$oldpost = $oldpost->item(0);
+				$oldpost->parentNode->replaceChild($postheader, $oldpost);
+			} else throw new Exception('old_post_no_found');
+			// save post.xml
+			$post->writexml();
+			// update month.xml
+			$month = new Month($year, $month);
+			$month->mod($id, $post);
+		}
+		// save calendar.xml
+		$this->writexml();
 	}
 
 	public function add($post) { // main method
@@ -221,35 +350,17 @@ class Calendar extends DOMDocument {
 		} elseif ($this->titleDuplicate($post)) {
 			throw new Exception('title_duplicate');
 		}
-		// build datetime
-		$year = $post->year;
-		$month = $post->month;
-		$day = $post->day;
-		// create postheader clone post
-		$postheader = $this->importNode(dom_import_simplexml($post->post), true);
-		// remove content & summary to get produce postheader
-		$postheader->removeChild($postheader->lastChild);
-		$postheader->removeChild($postheader->lastChild);
-		// search node to nested
-		$daynode = $this->getDayNode($year, $month, $day, true);
-		// insert new post
-		$daynode->insertBefore($postheader, $daynode->firstChild);
-		// save post.xml
-		$post->writexml();
-		// create year.xml
-		$this->createYear($year);
-		// update month.xml
-		$month = new Month($year, $month);
-		$month->add($post, true);
-		// update lastupdate.xml
-		$this->lastupdate();
-		// save calendar.xml
-		$this->writexml();
+		$this->change($post);
+	}
+
+	public function mod($oldpost, $newpost) { // main method
+		if (isset($oldpost->id))
+			$oldpost = $oldpost->id;
+		$this->change($newpost, $oldpost);
 	}
 
 	public function del($id) { // main method
-		if (strlen($id) != 14)
-			throw new Exception('bad_id:$id');
+		getid($id);
 		$post = $this->xpath->query("/descendant::post[@id='$id']");
 		if ($post->length) {
 			$post = $post->item(0);
@@ -279,6 +390,15 @@ class Calendar extends DOMDocument {
 		} else {
 			throw new Exception('post_not_exist');
 		}
+	}
+
+	public function upd($oldpost, $newpost) {
+		if (!$newpost instanceof Post)
+			throw new Exception('bad_newpost');
+		if (isset($oldpost->id))
+			$oldpost = $oldpost->id;
+		$this->change($newpost); // add without check
+		$this->del($oldpost);
 	}
 
 	public function writexml() {
@@ -367,7 +487,7 @@ class Month extends DOMDocument {
 		$this->xpath = new DOMXPath($this);
 	}
 
-	public function add($post, $auto) { // main method
+	public function change($post, $oldid = null) { // oldid is null -> add
 	// check datetime
 		$year = $post->year;
 		$month = $post->month;
@@ -381,19 +501,36 @@ class Month extends DOMDocument {
 		$postsummary->removeChild($postsummary->lastChild);
 		// find day to nested
 		$daynode = $this->xpath->query("//day[@day='$day']");
-		if ($daynode->length) {
-			$daynode = $daynode->item(0);
-		} else {
-		// create
-			$daynode = $this->createElement('day');
-			$daynode->setAttribute('day', $day); // @year
-			$this->root->insertBefore($daynode, $this->root->firstChild);
+		if (!$oldid) { // add
+			if ($daynode->length) {
+				$daynode = $daynode->item(0);
+			} else { // create
+				$daynode = $this->createElement('day');
+				$daynode->setAttribute('day', $day); // @year
+				$this->root->insertBefore($daynode, $this->root->firstChild);
+			}
+			$daynode->insertBefore($postsummary, $daynode->firstChild);
+			// create day xml
+			$this->createDayXML($year, $month, $day);
+		} else { //mod
+			$oldpost = $this->xpath->query("/descendant::post[@id='$oldid']");
+			if ($oldpost->length) {
+				$oldpost = $oldpost->item(0);
+				$oldpost->parentNode->replaceChild($postsummary, $oldpost);
+			} else throw new Exception('old_post_no_found');
 		}
-		$daynode->insertBefore($postsummary, $daynode->firstChild);
-		// create day xml
-		$this->createDayXML($year, $month, $day);
 		// save this xml
 		$this->writexml();
+	}
+
+	public function add($post) { // main method
+		$this->change($post);
+	}
+
+	public function mod($oldpost, $newpost) { // main method
+		if (isset($oldpost->id))
+			$oldpost = $oldpost->id;
+		$this->change($newpost, $oldpost);
 	}
 
 	public function del($id = null) { // main method
@@ -402,6 +539,7 @@ class Month extends DOMDocument {
 			foreach (glob($this->year.$this->month."*.xml") as $filename)
 				unlink($filename);
 		} else {
+			getid($id);
 			$post = $this->xpath->query("//post[@id='$id']");
 			if ($post->length) {
 				$post = $post->item(0);
@@ -446,6 +584,11 @@ class Month extends DOMDocument {
 
 }
 
+function getid($id) {
+	if (isset($id) && $id && preg_match('/\d{14}/', $id))
+		return $id;
+	throw new Exception("bad_id");
+}
 
 function lhex2b36($hex) {
 	$b36 = '';
@@ -498,7 +641,8 @@ if (array_key_exists('req', $_GET)) {
 			echo "<err>bad_req</err>";
 	}
 } elseif (isset ($_GET['act'])) {
-	switch($_GET['act']) {
+	$act = $_GET['act'];
+	switch($act) {
 		case 'login':
 			if (!array_key_exists('user',$_GET) ||
 				!array_key_exists('hash',$_GET)) {
@@ -516,10 +660,7 @@ if (array_key_exists('req', $_GET)) {
 					if ($cp == $hash) {
 						$_SESSION['admin'] = $user;
 						setcookie('session_id', session_id());
-						printxml ('<xhtml><h1 align="center" style="margin-top:25px">登录成功！</h1>
-						<script type="text/javascript">
-							setTimeout("location.replace(\'mgr.xml\')",1000)
-						</script></xhtml>');
+						printxml ('<msg href="mgr.xml">登录成功！</msg>');
 					} else {
 						printxml ('<err href="mgr.xml">密码错误！</err>');
 					}
@@ -544,7 +685,7 @@ if (array_key_exists('req', $_GET)) {
 			try {
 				$post = new Post($_POST);
 				$calendar = new Calendar();
-				$calendar->add($post, true);
+				$calendar->add($post);
 				printxml ('<msg href="mgr.xml">日志添加成功！</msg>');
 			} catch (Exception $e) {
 				switch ($e->getMessage()) {
@@ -586,24 +727,44 @@ if (array_key_exists('req', $_GET)) {
 		case 'edt':
 			if (!isset ($_SESSION['admin']))
 				printxml ('<err href="mgr.xml">管理员未登录</err>', true);
-			if (isset ($_GET['id']) || $_GET['id'])
-				echo '<?xml version="1.0" encoding="utf-8" ?>
+			try {
+				if (isset ($_GET['id']) && getid($_GET['id']))
+					echo '<?xml version="1.0" encoding="utf-8" ?>
 <?xml-stylesheet href="style/postedit.xsl" type="text/xsl"?>
 <post id="'.$_GET['id'].'"/>';
-			else printxml ("<err href='mgr.xml'>没有要编辑的日志！</err>");
+				else printxml ("<err href='mgr.xml'>没有要编辑的日志！</err>");
+			} catch (Exception $e) {
+				die ('<err>'.$e->getMessage().'</err>');
+			}
 			break;
 		case 'mod':
-			if (!isset ($_SESSION['admin']))
-				printxml ('<err href="mgr.xml">管理员未登录</err>', true);
-			if (!isset ($_POST['date']) || !$_POST['date']) {
-				// is mod not upd
-
-				break; // break here
-			} // else goto upd
 		case 'upd':
 			if (!isset ($_SESSION['admin']))
 				printxml ('<err href="mgr.xml">管理员未登录</err>', true);
-			
+			try {
+				$id = getid($_GET['id']);
+				$calendar = new Calendar();
+				if (!$calendar->exists($id))
+					printxml ("<err href='mgr.xml'>要编辑的日志不存在！</err>", true);
+				$post = new Post($id);
+				$post->update($_POST);
+				if ($act == 'upd' || isset ($_POST['datetime']) && $_POST['datetime']) {
+					$calendar->upd($id, $post);
+					printxml ('<msg href="mgr.xml">日志更新成功！</msg>');
+				} else {
+					$calendar->mod($id, $post);
+					printxml ('<msg href="mgr.xml">日志修改成功！</msg>');
+				}
+			} catch (Exception $e) {
+				switch ($e->getMessage()) {
+					case 'nothing_to_update':
+						$msg = '没有修改任何信息！';
+						break;
+					default:
+						$msg = $e->getMessage();
+				}
+				printxml ("<err href='javascript:history.back()'>$msg</err>");
+			}
 			break;
 		default:
 			printxml ("<err>bad_act</err>");
