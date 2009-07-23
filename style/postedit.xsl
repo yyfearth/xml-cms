@@ -29,10 +29,10 @@
 							</span>
 							<input class="author" id="author_field" name="author" maxlength="20" />
 							<div class="fixed"></div>
-							<span id="category_area" class="categories" title="编辑分类">
+							<span id="category_area" class="category" title="编辑分类">
 								<xsl:value-of select="$post/category" />
 							</span>
-							<input class="categories" id="category_field" maxlength="10" name="category" />
+							<input class="category" id="category_field" maxlength="10" name="category" />
 							<div class="fixed"></div>
 							<xsl:variable name="tags">
 								<xsl:for-each select="$post/tag">
@@ -63,117 +63,7 @@
 						</div>
 					</form>
 				</div>
-				<script type="text/javascript">
-		<![CDATA[
-var names = ['title', 'date', 'author', 'category', 'tags', 'summary', 'content'];
-var theform = document.getElementById('editform');
-var submit = document.getElementById('submit');
-submit.disabled = true;
-
-function alterField(name) {
-	var area = document.getElementById(name + '_area');
-	var field = document.getElementById(name + '_field');
-	var istextfield = /input/i.test(field.nodeName);
-	var display = area.style.display;
-	field.style.display = 'none';
-	area.style.cursor = 'pointer';
-	area.onmouseover = function () {
-		// this.style.border = '1px solid black';
-		this.style.backgroundColor = '#eedd99';
-	};
-	area.onmouseout = function () {
-		// this.style.border = 'none';
-		this.style.backgroundColor = '';
-	};
-	field.onfocus = field.onchange = function () {
-		if (istextfield) {
-			field.size = field.value.replace(/[^\u0000-\u00ff]/g,"aa").length + 5;
-		} else {
-			field.style.overflowY = 'visible';
-			field.style.height = field.scrollHeight + 'px';
-			setTimeout(function () {
-				field.style.height = field.scrollHeight + 'px';
-			}, 100);
-		}
-	}
-	area.onclick = function () {
-		area.style.display = 'none';
-		field.value = getXHtml(area.innerHTML);
-		field.style.display = display;
-		field.focus();
-	};
-	field.edt = false;
-	field.onchange = function () {
-		field.changed = true;
-	}
-	field.onblur = function () {
-		if (field.value && (field.edt || field.changed && confirm('确定修改？'))) {
-			area.innerHTML = field.value;
-			if (!field.edt) {
-				field.edt = true;
-				delete field.changed;
-				field.onchange = null;
-				area.style.border = '1px dashed blue';
-				submit.disabled = false;
-			}
-		}
-		area.style.display = display;
-		field.style.display = 'none';
-	};
-}
-
-for (var i in names) alterField(names[i]);
-
-theform.onsubmit = function () {
-	for (var i in names) {
-		var field = document.getElementById(names[i] + '_field');
-		if (!field.edt) {
-			field.value = '';
-			field.disabled = true; // not submit
-		}
-	}
-};
-
-function getXHtml(str) {
-	return str.replace(/^\s+|\s+$|\t+/g,'')
-	.replace(/<[^<>]+>/gm, function(nodeHtml){
-		if(nodeHtml.indexOf("/>")>-1 || nodeHtml.indexOf("</")>-1 ){
-			return nodeHtml.toLowerCase();
-		}
-
-		//fix string has quot 's attribute.
-		nodeHtml = nodeHtml.replace(/\w+="{1}[^"]*"{1}/gm,function(nodeAtt){
-			var arr = nodeAtt.split('="');
-			var attValue = arr[1].substr(0,arr[1].length-1);
-			//attValue = xmlEscape(attValue);
-			return arr[0].toLowerCase() + '="' + attValue + '"';
-		});
-
-		//fix not has quot 's attribute.
-		nodeHtml = nodeHtml.replace(/ \w+=[^"> ]+/gm,function(nodeAtt){
-			var n = nodeAtt.indexOf('=');
-			var attName = nodeAtt.substring(0,n+1);
-			var attValue = nodeAtt.substr(n+1);
-			//attValue = xmlEscape(attValue);
-			return attName.toLowerCase() + '"' + attValue + '"';
-		});
-
-		var nodeName;
-		nodeHtml = nodeHtml.replace(/<\w+/gm,function(nn){
-			nn = nn.toLowerCase();
-			nodeName = nn.substr(1);
-			return nn;
-		});
-		if(nodeName=="input"||nodeName=="hr"||nodeName=="br"||nodeName=="img"){
-			if( nodeHtml.substr(nodeHtml.length-2) != "/>" ){
-				nodeHtml = nodeHtml.substr(0,nodeHtml.length-1) + "/>";
-			}
-		}
-		return nodeHtml;
-	});
-}
-		]]>
-				</script>
+				<script type="text/javascript" src="script/postedit.js"></script>
 			</xsl:when>
 			<xsl:otherwise>
 				<h1 style="color:red;text-align:center;margin-top:25px">无法载入原日志信息！</h1>
