@@ -323,7 +323,7 @@ input.textfield, textarea {
 .post .date, 
 .post .tags, 
 .post .author, 
-.post .categories, 
+.post .category,
 .post .editpost, 
 .post .readingblinds, 
 .post .comments, 
@@ -347,7 +347,7 @@ input.textfield, textarea {
 .post .tags {
 	background-position:0 -16px;
 }
-.post .categories {
+.post .category {
 	background-position:0 -32px;
 }
 .post .author {

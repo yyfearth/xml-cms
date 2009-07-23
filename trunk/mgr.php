@@ -4,7 +4,7 @@ $admin = array ('admin'=>'b025373b15978dfb71eae3696d7d91869000515c');
 //$xml = str_replace( array ('<', '>'), array ('&lt;', '&gt;'), $this->saveXML());
 
 class Post {
-	public $id = null, $post = null, $year, $month, $day, $xml;
+	public $id = null, $post = null, $year, $month, $day, $xml, $upd = 0;
 	private $oldid = null;
 
 	public function __construct($post = null) {
@@ -34,6 +34,7 @@ class Post {
 	}
 
 	private function sortcut() {
+		$this->upd = 0;
 		$this->oldid = null;
 		$this->id = $this->post['id'];
 		$this->year = $this->post->datetime['year'];
@@ -42,20 +43,20 @@ class Post {
 	}
 
 	public function tags($tags) {
-		if (isset($tags)) { // tags to xml
+		if ($tags == 'clone' || $tags === true) {
+			$tagxml = '';
+			foreach ($this->post->tag as $tag)
+				$tagxml .= "<tag>$tag</tag>";
+			return $tagxml;
+		} elseif (isset($tags)) { // tags to xml
 			$tagxml = '';
 			if ($tags != null && strlen($tags) > 0)
 				foreach (split(',\s*', $tags) as $tag)
 					$tagxml .= "<tag>$tag</tag>";
 			return $tagxml;
-		} elseif ($tags == 'clone' || $tags === true) {
-			$tagxml = '';
-			foreach ($this->post->tag() as $tag)
-				$tagxml .= "<tag>$tag</tag>";
-			return $tagxml;
 		} else { // xml to tags
 			$tags = array();
-			foreach ($this->post->tag() as $tag)
+			foreach ($this->post->tag as $tag)
 				array_push($tags, $tag);
 			return join(',', $tags);
 		}
@@ -114,6 +115,9 @@ class Post {
 	// $param_array alow every empty
 		if($params_array == null)
 			throw new Exception('nothing_to_update');
+		// chk upd level
+		$upd = (count(array_intersect(array_keys($params_array),
+			array('title', 'author', 'catgory', 'tags'))) ? 3 : 0); // cal : none
 		// param preprocess
 		$title =  $this->getParam('title', $this->post->title, $params_array);
 		$author = $this->getParam('author', $this->post->author, $params_array);
@@ -128,6 +132,7 @@ class Post {
 			$month = date("m", $datetime);
 			$day = date("d", $datetime);
 			$time = date("H:i:s", $datetime);
+			$upd = 4; // level 4, full update
 		} else {
 			$id = $this->id;
 			$year =$this->year;
@@ -137,20 +142,23 @@ class Post {
 		}
 		// summary
 		if (array_key_exists('summary', $params_array) &&
-			strlen($params_array['summary']))
+			strlen($params_array['summary'])) {
 			$summary = $this->getXmlParam('summary', $params_array);
-		else $summary = $this->post->summary->asXML();
+			if ($upd == 0) $upd = 2; // level 2, cal & month mod
+		} else $summary = $this->post->summary->asXML();
 		// content
 		if (array_key_exists('content', $params_array) &&
-			strlen($params_array['content']))
+			strlen($params_array['content'])) {
 			$content = $this->getXmlParam('content', $params_array);
-		else $content = $this->post->content->asXML();
+			if ($upd == 0) $upd = 1; // level 1, month mod
+		} else $content = $this->post->content->asXML();
 		// build xml
 		$this->buildxml(
 			$id, $title, $year, $month, $day, $time,
 			$author, $category, $tags, $summary, $content
 		);
-		if ($this->id != $id) $this->oldid = $id;
+		$this->upd = $upd;
+		if ($upd == 4) $this->oldid = $id;
 		return $this->post; // simplexml obj
 	}
 
@@ -327,21 +335,29 @@ class Calendar extends DOMDocument {
 			$month->add($post);
 			// update lastupdate.xml
 			$this->lastupdate();
+			// save calendar.xml
+			$this->writexml();
 		} else { // mod
+			if ($post->upd == 0) throw new Exception('post_not_updated');
 			getid($oldid);
-			$oldpost = $this->xpath->query("/descendant::post[@id='$oldid']");
-			if ($oldpost->length) {
-				$oldpost = $oldpost->item(0);
-				$oldpost->parentNode->replaceChild($postheader, $oldpost);
-			} else throw new Exception('old_post_no_found');
+			// update calendar
+			if ($post->upd == 3) {
+				$oldpost = $this->xpath->query("/descendant::post[@id='$oldid']");
+				if ($oldpost->length) {
+					$oldpost = $oldpost->item(0);
+					$oldpost->parentNode->replaceChild($postheader, $oldpost);
+				} else throw new Exception('old_post_no_found');
+				// save calendar.xml
+				$this->writexml();
+			}
+			// update month.xml
+			if ($post->upd > 1) {
+				$month = new Month($year, $month);
+				$month->mod($oldid, $post);
+			}
 			// save post.xml
 			$post->writexml();
-			// update month.xml
-			$month = new Month($year, $month);
-			$month->mod($id, $post);
 		}
-		// save calendar.xml
-		$this->writexml();
 	}
 
 	public function add($post) { // main method
@@ -608,6 +624,7 @@ function lb362hex($b36) {
  session_id($_COOKIE['session_id']);*/
 
 function printxml($xml, $die = false) {
+	header ("Content-type: text/xml; charset=utf-8"); //XML
 	echo '<?xml version="1.0" encoding="utf-8" ?>
 <?xml-stylesheet href="style/xhtml.xsl" type="text/xsl"?>';
 	if (!$die) echo $xml;
@@ -618,7 +635,6 @@ if (isset ($_COOKIE['session_id']) &&
 	strlen($_COOKIE['session_id']) == 32)
 	session_id($_COOKIE['session_id']);
 @session_start();
-header ("Content-type: text/xml"); //XML
 header ("Expires: Mon,26 Jul 1997 05:00:00 GMT"); // Date in the past
 header ("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT"); // always modified
 header ("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
@@ -728,11 +744,12 @@ if (array_key_exists('req', $_GET)) {
 			if (!isset ($_SESSION['admin']))
 				printxml ('<err href="mgr.xml">管理员未登录</err>', true);
 			try {
-				if (isset ($_GET['id']) && getid($_GET['id']))
+				if (isset ($_GET['id']) && getid($_GET['id'])) {
+					header ("Content-type: text/xml; charset=utf-8"); //XML
 					echo '<?xml version="1.0" encoding="utf-8" ?>
 <?xml-stylesheet href="style/postedit.xsl" type="text/xsl"?>
 <post id="'.$_GET['id'].'"/>';
-				else printxml ("<err href='mgr.xml'>没有要编辑的日志！</err>");
+				} else printxml ("<err href='mgr.xml'>没有要编辑的日志！</err>");
 			} catch (Exception $e) {
 				die ('<err>'.$e->getMessage().'</err>');
 			}
@@ -748,7 +765,7 @@ if (array_key_exists('req', $_GET)) {
 					printxml ("<err href='mgr.xml'>要编辑的日志不存在！</err>", true);
 				$post = new Post($id);
 				$post->update($_POST);
-				if ($act == 'upd' || isset ($_POST['datetime']) && $_POST['datetime']) {
+				if ($act == 'upd' || $post->upd == 4) {
 					$calendar->upd($id, $post);
 					printxml ('<msg href="mgr.xml">日志更新成功！</msg>');
 				} else {
