@@ -137,7 +137,7 @@ username.focus();
 									<th>作者</th>
 									<th>发布时间</th>
 									<th>标签</th>
-									<th>操作</th>
+									<th style="width:60px">操作</th>
 								</tr>
 							</thead>
 							<tfoot>

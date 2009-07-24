@@ -15,8 +15,12 @@
 				<xsl:for-each select="document($xml)//day[@day=$day]/post">
 					<xsl:choose>
 						<xsl:when test="position()=1">
-							<a href="{$id}.xml">最近更新</a>
-							<xsl:apply-templates select="document($latestxml)/post" />
+							<a href="{$id}.xml" >
+								<img style="margin:0px 0px -30px -10px;z-index=-1;" title="最近更新" alt="最近更新" src="theme/img/new.jpg" />
+							</a>
+							<div style="z-index=10;">
+								<xsl:apply-templates select="document($latestxml)/post" />
+							</div>
 							<p>
 								<a class="post-link" href="{$id}.xml">完整信息...</a>
 							</p>
