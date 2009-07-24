@@ -527,7 +527,7 @@ class Month extends DOMDocument {
 			}
 			$daynode->insertBefore($postsummary, $daynode->firstChild);
 			// create day xml
-			$this->createDayXML($year, $month, $day);
+			$this->createDayXML($day);
 		} else { //mod
 			$oldpost = $this->xpath->query("/descendant::post[@id='$oldid']");
 			if ($oldpost->length) {
