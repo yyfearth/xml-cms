@@ -36,7 +36,7 @@
 					<span class="author">
 						<xsl:value-of select="author" />
 					</span>
-					<span class="categories">
+					<span class="category">
 						<xsl:value-of select="category" />
 					</span>
 					<xsl:if test="tag">
