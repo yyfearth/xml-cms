@@ -16,23 +16,11 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</h2>
-			<div class="info">
-				<span class="date">
-					<xsl:value-of select="concat(datetime/@year,'-',datetime/@month,'-',datetime/@day,' ',datetime/@time)" />
-				</span>
-				<div class="fixed"></div>
-			</div>
 			<div class="content">
-				<div class="summary">
-					<xsl:copy-of select="summary/node()" />
-				</div>
-				<xsl:if test="not(/post) and summary">
-					<p><a class="post-link" href="{@id}.xml">阅读全文...</a></p>
-				</xsl:if>
-				<xsl:if test="/post">
-					<xsl:copy-of select="content/node()" />
-				</xsl:if>
 				<p class="under">
+					<span class="date">
+						<xsl:value-of select="concat(datetime/@year,'-',datetime/@month,'-',datetime/@day,' ',datetime/@time)" />
+					</span>
 					<span class="author">
 						<xsl:value-of select="author" />
 					</span>
@@ -48,6 +36,17 @@
 						</span>
 					</xsl:if>
 				</p>
+				<div class="summary">
+					<xsl:copy-of select="summary/node()" />
+				</div>
+				<xsl:if test="/post">
+					<xsl:copy-of select="content/node()" />
+				</xsl:if>
+				<xsl:if test="not(/post) and summary">
+					<p style="margin-top:10px">
+						<a class="post-link" href="{@id}.xml">阅读全文...</a>
+					</p>
+				</xsl:if>
 				<div class="fixed"></div>
 			</div>
 		</div>
