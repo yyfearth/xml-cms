@@ -18,39 +18,41 @@
 			<a href="{@year}.xml">
 				<xsl:value-of select="concat(@year,'年')" />
 			</a>
+			<xsl:variable name="showmonth" select="count(month[count(day/post)>1])>0"/>
 			<xsl:for-each select="month">
 				<xsl:sort select="@month" order="descending" data-type="number" />
-				<xsl:apply-templates select="." />
+				<div class="month">
+					<xsl:if test="$showmonth">
+						<a href="{../@year}{@month}.xml">
+							<xsl:value-of select="concat(@month,'月')" />
+						</a>
+					</xsl:if>
+					<xsl:apply-templates select="." />
+				</div>
 			</xsl:for-each>
 		</div>
 	</xsl:template>
 
 	<xsl:template match="month">
-		<div class="month">
-			<xsl:if test="not(/month) and count(day/post)>1">
-				<a href="{../@year}{@month}.xml">
-					<xsl:value-of select="concat(@month,'月')" />
-				</a>
-			</xsl:if>
-			<xsl:for-each select="day">
-				<xsl:sort select="@day" order="descending" data-type="number" />
+		<xsl:variable name="showday" select="count(day[count(post)>1])>0"/>
+		<xsl:for-each select="day">
+			<xsl:sort select="@day" order="descending" data-type="number" />
+			<div class="day">
+				<xsl:if test="$showday">
+					<a href="{../@year}{../../@year}{../@month}{@day}.xml">
+						<xsl:value-of select="concat(@day,'日')" />
+					</a>
+				</xsl:if>
 				<xsl:apply-templates select="." />
-			</xsl:for-each>
-		</div>
+			</div>
+		</xsl:for-each>
 	</xsl:template>
 
 	<xsl:template match="day">
-		<div class="day">
-			<xsl:if test="not(/day) and count(post)>1">
-				<a href="{../@year}{../../@year}{../@month}{@day}.xml">
-					<xsl:value-of select="concat(@day,'日')" />
-				</a>
-			</xsl:if>
-			<xsl:for-each select="post">
-				<xsl:sort select="datetime/@time" order="descending" />
-				<xsl:apply-templates select="." />
-			</xsl:for-each>
-		</div>
+		<xsl:for-each select="post">
+			<xsl:sort select="datetime/@time" order="descending" />
+			<xsl:apply-templates select="." />
+		</xsl:for-each>
 	</xsl:template>
 
 	<xsl:template match="post">
