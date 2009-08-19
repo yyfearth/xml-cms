@@ -59,8 +59,7 @@
 								</form>
 								<script type="text/javascript" src="script/cipher.js"></script>
 								<script type="text/javascript">
-									var server_timestamp =
-									<xsl:value-of select="$mgrts/timestamp" />;
+									var server_timestamp = <xsl:value-of select="$mgrts/timestamp" />;
 									<![CDATA[
 var timestamp = Date.parse(new Date())/1000;
 server_timestamp = parseInt(server_timestamp);
