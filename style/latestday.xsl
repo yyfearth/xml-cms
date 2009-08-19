@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet version="1.0"
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<xsl:import href="frame.xsl" />
 	<xsl:import href="post.xsl" />
 	<xsl:variable name="upd" select="document(concat('../lastupdate.xml?',generate-id()))/post" />
@@ -25,16 +24,18 @@
 							<p>
 								<a class="post-link" href="{$id}.xml">完整信息...</a>
 							</p>
-							<div class="post">
-								<h2>当日其他日志</h2>
-							</div>
 						</xsl:when>
 						<xsl:when test="../@day=$day">
+							<xsl:if test="position()=2">
+								<div class="post">
+									<h2>当日其他日志</h2>
+								</div>
+							</xsl:if>
 							<xsl:apply-templates select="." />
 							<xsl:if test="position()=count(../post)">
-							<div class="post">
-								<h2>当月其他日志</h2>
-							</div>
+								<div class="post">
+									<h2>当月其他日志</h2>
+								</div>
 							</xsl:if>
 						</xsl:when>
 						<xsl:otherwise>
