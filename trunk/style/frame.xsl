@@ -9,12 +9,8 @@
 				<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 				<title>XmlCMS</title>
 				<!-- style START -->
-				<link rel="stylesheet" href="theme/style.css" type="text/css"
-					media="screen" />
-				<!--
-					[if IE 6]> <link rel="stylesheet" href="theme/ie6.css"
-					type="text/css" media="screen" /> <![endif]
-				-->
+				<link rel="stylesheet" href="theme/style.css" type="text/css" media="screen" />
+				<!--[if IE 6]> <link rel="stylesheet" href="theme/ie6.css" type="text/css" media="screen" /> <![endif]-->
 				<!-- style END -->
 				<link rel="index" title="XmlCMS" href="http://yyfearth.com/XmlCMS" />
 				<link rel="shortcut icon" href="images/XmlCMS.ico" type="image/x-icon" />
@@ -31,9 +27,7 @@
 								<h1 id="title">
 									<a href="http://yyfearth.com/XmlCMS">XmlCMS</a>
 								</h1>
-								<div id="tagline">
-									基于XML+XSL的CMS
-								</div>
+								<div id="tagline">基于XML+XSL的CMS</div>
 							</div>
 							<!-- navigation START -->
 							<div id="navigation">
@@ -74,12 +68,8 @@
 						<!-- content END -->
 						<!-- footer START -->
 						<div id="footer">
-							<a id="gotop" href="#top"
-								onclick="document.body.scrollTop=document.documentElement.scrollTop=0;return false;">置顶
-							</a>
-							<div id="copyright">
-								版权所有 ® 2009 yyfearth.com
-							</div>
+							<a id="gotop" href="#top" onclick="document.body.scrollTop=document.documentElement.scrollTop=0;return false;">置顶</a>
+							<div id="copyright">版权所有 ® 2009 yyfearth.com</div>
 						</div>
 						<!-- footer END -->
 					</div>
@@ -168,9 +158,7 @@
 				<xsl:if test="$upd/@id">
 					<li class="page_item">
 						<xsl:if test="/calendar">
-							<xsl:attribute name="class">
-							current_page_item
-							</xsl:attribute>
+							<xsl:attribute name="class">current_page_item</xsl:attribute>
 						</xsl:if>
 						<a class="home" title="所有" href="calendar.xml">所有</a>
 					</li>
@@ -186,7 +174,7 @@
 					<li class="page_item">
 						<a title="最新一篇日志" href="{$upd/@id}.xml">最新一篇日志</a>
 					</li>
-						<!--li><a class="lastmenu" href="javascript:void(0);"></a></li-->
+					<!--li><a class="lastmenu" href="javascript:void(0);"></a></li-->
 				</xsl:if>
 			</xsl:otherwise>
 		</xsl:choose>
