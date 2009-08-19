@@ -5,9 +5,7 @@
 		<xsl:variable name="mgr" select="document('../mgr.php?req=admin')" />
 		<xsl:choose>
 			<xsl:when test="not($mgr)">
-				<h1 style="color:red;text-align: center">
-					错误：无法获取管理信息！
-				</h1>
+				<h1 style="color:red;text-align: center">错误：无法获取管理信息！</h1>
 			</xsl:when>
 			<xsl:when test="$mgr/err">
 				<xsl:variable name="err" select="$mgr/err" />
