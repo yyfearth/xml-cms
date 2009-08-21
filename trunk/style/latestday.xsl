@@ -12,7 +12,7 @@
 				<xsl:variable name="id" select="$upd/@id" />
 				<xsl:variable name="xml" select="concat('../',$upd/@year,$upd/@month,'.xml')" />
 				<xsl:variable name="latestxml" select="concat('../',$id,'.xml')" />
-				<xsl:for-each select="document($xml)///post">
+				<xsl:for-each select="document($xml)/descendant::post">
 					<xsl:choose>
 						<xsl:when test="position()=1">
 							<a href="{$id}.xml" style="position:relative;z-index=-100;">
