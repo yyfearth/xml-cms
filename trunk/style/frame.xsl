@@ -56,9 +56,9 @@
 							</div>
 							<!-- main END -->
 							<div id="sidebar" class="sidebar">
-								<div class="content">
-									<p align="center">侧边栏留用</p>
-									<p align="center">
+								<div style="margin: 10px;text-align:center" class="content">
+									<p>侧边栏留用</p>
+									<p style="margin: 10px">
 										<a href="mgr.xml">后台管理</a>
 									</p>
 								</div>
