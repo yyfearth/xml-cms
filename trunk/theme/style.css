@@ -481,52 +481,13 @@ input.textfield, textarea {
 #sidebar li {
 	font-size:12px;
 }
-#northsidebar .widget {
-	background:url(img/widgetsep.png) bottom no-repeat;
-	padding:10px 15px 19px;
-}
-#southsidebar .widget {
-	background:url(img/widgetsep.png) top no-repeat;
-	padding:15px 15px 17px;
-}
-#centersidebar {
-	padding:12px 15px 0;
-}
-#northsidebar, 
-#southsidebar {
-	font-size:95%;
-}
-#northsidebar .widget h2, 
-#southsidebar .widget h2 {
-	margin-bottom:10px;
-}
-#northsidebar .widget .content p, 
-#southsidebar .widget .content p {
-	margin-bottom:10px;
-}
-#westsidebar {
-	width:121px;
-	float:left;
-	padding-right:5px;
-	font-size:95%;
-	overflow:hidden;
-}
-#eastsidebar {
-	width:129px;
-	float:right;
-	font-size:95%;
-	overflow:hidden;
-}
-#westsidebar h3, 
-#eastsidebar h3 {
-	margin-bottom:5px;
-}
-#westsidebar .widget, 
-#eastsidebar .widget {
-	margin-bottom:15px;
-}
-#sidebar .widget_feeds {
+#sidebar .widget {
 	padding:5px 15px 14px;
+	background:url(img/widgetsep.png) bottom no-repeat;
+}
+#sidebar .widget .title {
+	font-size:small;
+	font-weight:bold;
 }
 #sidebar #feedrss, 
 #sidebar #feedemail {
@@ -564,30 +525,6 @@ input.textfield, textarea {
 	width:80px;
 	display:block;
 	text-indent:-999em;
-}
-#subscribe li#google_reader a span {
-	background-position:0 0;
-}
-#subscribe li#youdao_reader a span {
-	background-position:0 -20px;
-}
-#subscribe li#xianguo_reader a span {
-	background-position:0 -40px;
-}
-#subscribe li#zhuaxia_reader a span {
-	background-position:0 -60px;
-}
-#subscribe li#yahoo_reader a span {
-	background-position:0 -80px;
-}
-#subscribe li#newsgator_reader a span {
-	background-position:0 -100px;
-}
-#subscribe li#bloglines_reader a span {
-	background-position:0 -120px;
-}
-#subscribe li#inezha_reader a span {
-	background-position:0 -140px;
 }
 #subscribe li a {
 	display:block;
