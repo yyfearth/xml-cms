@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+	<xsl:import href="sidebar.xsl" />
 	<xsl:output encoding="utf-8" version="1.1" method="html"
 		indent="yes" omit-xml-declaration="yes" doctype-public="-//W3C//DTD XHTML 1.1//EN"
 		doctype-system="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" />
@@ -55,14 +56,9 @@
 								</xsl:if>
 							</div>
 							<!-- main END -->
-							<div id="sidebar" class="sidebar">
-								<div style="margin: 10px;text-align:center" class="content">
-									<p>侧边栏留用</p>
-									<p style="margin: 10px">
-										<a href="mgr.xml">后台管理</a>
-									</p>
-								</div>
-							</div>
+							<!-- sidebar START -->
+							<xsl:apply-imports/>
+							<!-- sidebar END -->
 							<div class="fixed"></div>
 						</div>
 						<!-- content END -->
