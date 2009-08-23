@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="style/month.xsl" type="text/xsl"?>
+<month year="####" month="##">
+	<day day="##">
+		<post id="##############">
+			<title></title>
+			<datetime year="####" month="##" day="##" time="##:##:##"/>
+			<author></author>
+			<category></category>
+			<tag></tag>
+			<tag></tag>
+			<tag></tag>
+			<summary></summary>
+		</post>
+	</day>
+</month>
