@@ -117,7 +117,7 @@ class Post {
 			throw new Exception('nothing_to_update');
 		// chk upd level
 		$upd = (count(array_intersect(array_keys($params_array),
-			array('title', 'author', 'catgory', 'tags'))) ? 3 : 0); // cal : none
+			array('title', 'author', 'category', 'tags'))) ? 3 : 0); // cal : none
 		// param preprocess
 		$title =  $this->getParam('title', $this->post->title, $params_array);
 		$author = $this->getParam('author', $this->post->author, $params_array);

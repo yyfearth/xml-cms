@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+	<xsl:import href="frame.xsl" />
+	<xsl:variable name="cal" select="document('../calendar.xml')"/>
+
+	<xsl:template match="cat">
+		<xsl:for-each select="$cal/descendant::post">
+			<xsl:sort select="@id" order="descending" data-type="number" />
+			<xsl:apply-templates select="." />
+		</xsl:for-each>
+		<script type="text/javascript">
+		<![CDATA[
+if (location.search) {
+	var cat = decodeURIComponent(location.search.substr(1));
+	document.title = cat + ' - XmlCMS';
+	document.getElementById('curcat').innerHTML = cat;
+	var posts = document.getElementsByName('postdiv');
+	for (var i = 0; i < posts.length; i++) if (posts[i].getAttribute('cat') != cat)
+		posts[i].style.display = 'none';
+}
+		]]>
+		</script>
+	</xsl:template>
+
+	<xsl:template match="post">
+		<div id="{@id}" name="postdiv" cat="{category}" class="post">
+			<h2>
+				<a title="{title}" href="{@id}.xml">
+					<xsl:value-of select="title" />
+				</a>
+			</h2>
+			<div class="content">
+				<p class="under">
+					<span class="date">
+						<xsl:value-of select="concat(datetime/@year,'-',datetime/@month,'-',datetime/@day,' ',datetime/@time)" />
+					</span>
+					<span class="author">
+						<xsl:value-of select="author" />
+					</span>
+					<span class="category">
+						<xsl:value-of select="category" />
+					</span>
+					<xsl:if test="tag">
+						<span class="tags">
+							<xsl:for-each select="tag">
+								<xsl:if test="position()!=1">, </xsl:if>
+								<xsl:value-of select="." />
+							</xsl:for-each>
+						</span>
+					</xsl:if>
+				</p>
+				<div class="fixed"></div>
+			</div>
+		</div>
+	</xsl:template>
+
+	<xsl:template name="nav">
+		<li class="page_item">
+			<a class="home" title="所有" href="calendar.xml">所有</a>
+		</li>
+		<li class="page_item">
+			<a title="分类" href="#cat" onclick="return false">分类</a>
+		</li>
+		<li class="current_page_item">
+			<a href="#view" title="当前分类" onclick="return false" id="curcat">当前分类</a>
+		</li>
+	</xsl:template>
+
+</xsl:stylesheet>
