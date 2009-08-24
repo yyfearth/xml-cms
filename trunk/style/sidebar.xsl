@@ -44,14 +44,14 @@
 document.writeln('<ul>');
 for (var i = 0; i < cats.length - 1; i++)
 	if (cats[i] != cats[i+1])
-		document.writeln('<li><a href="category.xml?' + cats[i] + '">'+ cats[i] + '</li>');
+		document.writeln('<li><a href="category.xml?' + cats[i] + '">'+ cats[i] + '</a></li>');
 document.writeln('</ul>');
 					]]>
 				</script>
 				<div class="fixed"></div>
 			</div>
 			<div class="widget">
-				<div class="title">
+				<div class="title" style="text-align:center">
 					<a href="mgr.xml">后台管理</a>
 				</div>
 				<div class="fixed"></div>
