@@ -1,6 +1,1 @@
-pre {
-	word-wrap:break-word; /* Internet Explorer 5.5+ */
-}
-#submitbox #submit {
-	cursor:hand;
-}
+pre{word-wrap:break-word}#submitbox #submit{cursor:hand}
