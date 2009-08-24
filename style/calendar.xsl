@@ -10,13 +10,35 @@
 			<xsl:sort select="@year" order="descending" data-type="number" />
 			<xsl:apply-templates select="." />
 		</xsl:for-each>
+		<script type="text/javascript">
+		<![CDATA[
+if (/^\??\d{4}(#|$)/.test(location.search)) {
+	var year = location.search.substr(1);
+	document.title = year + ' - XmlCMS';
+	document.getElementById('menus').innerHTML =
+		'<li class="page_item"><a class="home" title="所有" href="calendar.xml">所有</a></li>' +
+		'<li class="current_page_item"><a title="' + year + '年">' + year + '年</a></li>';
+	var years = document.getElementsByName('yeardiv'), count = 0;
+	for (var i = 0; i < years.length; i++) {
+		if (years[i].getAttribute('year') == year)
+			count++;
+		else
+			years[i].style.display = 'none';
+	}
+	if (!count) document.writeln('没有发现您需要的日志！');
+}
+		]]>
+		</script>
 	</xsl:template>
 
-	<xsl:template match="/calendar/year">
-		<div class="year">
-			<a href="{@year}.xml">
+	<xsl:template match="year">
+		<div class="year" name="yeardiv" year="{@year}">
+			<a href="?{@year}">
 				<xsl:value-of select="concat(@year,'年')" />
 			</a>
+			<span style="float:right;color:#999999">
+				<xsl:value-of select="concat('(共 ',count(descendant::post),' 篇)')" />
+			</span>
 			<xsl:variable name="showmonth" select="count(month[count(day/post)>1])>0"/>
 			<xsl:for-each select="month">
 				<xsl:sort select="@month" order="descending" data-type="number" />
@@ -25,6 +47,9 @@
 						<a href="{../@year}{@month}.xml">
 							<xsl:value-of select="concat(@month,'月')" />
 						</a>
+						<span style="float:right;color:#999999">
+							<xsl:value-of select="concat('(共 ',count(descendant::post),' 篇)')" />
+						</span>
 					</xsl:if>
 					<xsl:apply-templates select="." />
 				</div>
@@ -38,9 +63,12 @@
 			<xsl:sort select="@day" order="descending" data-type="number" />
 			<div class="day">
 				<xsl:if test="$showday">
-					<a href="{../@year}{../../@year}{../@month}{@day}.xml">
+					<a href="{../../@year}{../@month}.xml?{@day}">
 						<xsl:value-of select="concat(@day,'日')" />
 					</a>
+					<span style="float:right;color:#999999">
+						<xsl:value-of select="concat('(共 ',count(descendant::post),' 篇)')" />
+					</span>
 				</xsl:if>
 				<xsl:apply-templates select="." />
 			</div>
@@ -70,7 +98,9 @@
 						<xsl:value-of select="author" />
 					</span>
 					<span class="category">
-						<xsl:value-of select="category" />
+						<a href="category.xml?{category}" title="{category}">
+							<xsl:value-of select="category" />
+						</a>
 					</span>
 					<xsl:if test="tag">
 						<span class="tags">

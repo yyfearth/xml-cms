@@ -84,7 +84,7 @@
 				<a class="home" title="所有" href="calendar.xml">所有</a>
 			</li>
 			<li class="page_item">
-				<a title="年" href="{$upd/@year}.xml">
+				<a title="年" href="calendar.xml?{$upd/@year}">
 					<xsl:value-of select="concat($upd/@year,'年')" />
 				</a>
 			</li>
@@ -94,7 +94,7 @@
 				</a>
 			</li>
 			<li class="page_item">
-				<a title="日" href="{$upd/@year}{$upd/@month}{$upd/@day}.xml">
+				<a title="日" href="{$upd/@year}{$upd/@month}.xml?{$upd/@day}">
 					<xsl:value-of select="concat($upd/@day,'日')" />
 				</a>
 			</li>
