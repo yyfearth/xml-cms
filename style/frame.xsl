@@ -89,12 +89,12 @@
 					</a>
 				</li>
 				<li class="page_item">
-					<a title="{$dt/@year}{$dt/@month}月" href="{$dt/@year}{$dt/@month}.xml">
+					<a title="{$dt/@month}月" href="{$dt/@year}{$dt/@month}.xml">
 						<xsl:value-of select="concat($dt/@month,'月')" />
 					</a>
 				</li>
 				<li class="page_item">
-					<a title="{$dt/@year}{$dt/@month}{$dt/@day}日" href="{$dt/@year}{$dt/@month}.xml?{$dt/@day}">
+					<a title="{$dt/@day}日" href="{$dt/@year}{$dt/@month}.xml?{$dt/@day}">
 						<xsl:value-of select="concat($dt/@day,'日')" />
 					</a>
 				</li>
@@ -109,12 +109,12 @@
 					<a class="home" title="所有" href="calendar.xml">所有</a>
 				</li>
 				<li class="page_item">
-					<a title="年" href="calendar.xml?{month/@year}">
+					<a title="{month/@year}年" href="calendar.xml?{month/@year}">
 						<xsl:value-of select="concat(month/@year,'年')" />
 					</a>
 				</li>
 				<li class="current_page_item">
-					<a title="{month/@year}{month/@month}月" href="{month/@year}{month/@month}.xml">
+					<a title="{month/@month}月" href="{month/@year}{month/@month}.xml">
 						<xsl:value-of select="concat(month/@month,'月')" />
 					</a>
 				</li>
