@@ -14,9 +14,14 @@ if (location.search) {
 	var cat = decodeURIComponent(location.search.substr(1));
 	document.title = cat + ' - XmlCMS';
 	document.getElementById('curcat').innerHTML = cat;
-	var posts = document.getElementsByName('postdiv');
-	for (var i = 0; i < posts.length; i++) if (posts[i].getAttribute('cat') != cat)
-		posts[i].style.display = 'none';
+	var posts = document.getElementsByName('postdiv'), count = 0;
+	for (var i = 0; i < posts.length; i++) {
+		if (posts[i].getAttribute('cat') == cat)
+			count++;
+		else
+			posts[i].style.display = 'none';
+	}
+	if (!count) document.writeln('没有发现您需要的日志！');
 }
 		]]>
 		</script>
@@ -37,7 +42,7 @@ if (location.search) {
 					<span class="author">
 						<xsl:value-of select="author" />
 					</span>
-					<span class="category">
+					<span class="category" style="font-weight:bold">
 						<xsl:value-of select="category" />
 					</span>
 					<xsl:if test="tag">

@@ -84,7 +84,7 @@
 				</li>
 				<xsl:variable name="dt" select="post/datetime" />
 				<li class="page_item">
-					<a title="{$dt/@year}年" href="{$dt/@year}.xml">
+					<a title="{$dt/@year}年" href="calendar.xml?{$dt/@year}">
 						<xsl:value-of select="concat($dt/@year,'年')" />
 					</a>
 				</li>
@@ -94,7 +94,7 @@
 					</a>
 				</li>
 				<li class="page_item">
-					<a title="{$dt/@year}{$dt/@month}{$dt/@day}日" href="{$dt/@year}{$dt/@month}{$dt/@day}.xml">
+					<a title="{$dt/@year}{$dt/@month}{$dt/@day}日" href="{$dt/@year}{$dt/@month}.xml?{$dt/@day}">
 						<xsl:value-of select="concat($dt/@day,'日')" />
 					</a>
 				</li>
@@ -104,48 +104,18 @@
 					</a>
 				</li>
 			</xsl:when>
-			<xsl:when test="/day">
-				<li class="page_item">
-					<a class="home" title="所有" href="calendar.xml">所有</a>
-				</li>
-				<li class="page_item">
-					<a title="{day/@year}年" href="{day/@year}.xml">
-						<xsl:value-of select="concat(day/@year,'年')" />
-					</a>
-				</li>
-				<li class="page_item">
-					<a title="{day/@year}{day/@month}月" href="{day/@year}{day/@month}.xml">
-						<xsl:value-of select="concat(day/@month,'月')" />
-					</a>
-				</li>
-				<li class="current_page_item">
-					<a title="日">
-						<xsl:value-of select="concat(day/@day,'日')" />
-					</a>
-				</li>
-			</xsl:when>
 			<xsl:when test="/month">
 				<li class="page_item">
 					<a class="home" title="所有" href="calendar.xml">所有</a>
 				</li>
 				<li class="page_item">
-					<a title="年" href="{month/@year}.xml">
+					<a title="年" href="calendar.xml?{month/@year}">
 						<xsl:value-of select="concat(month/@year,'年')" />
 					</a>
 				</li>
 				<li class="current_page_item">
-					<a title="月">
+					<a title="{month/@year}{month/@month}月" href="{month/@year}{month/@month}.xml">
 						<xsl:value-of select="concat(month/@month,'月')" />
-					</a>
-				</li>
-			</xsl:when>
-			<xsl:when test="/year">
-				<li class="page_item">
-					<a class="home" title="所有" href="calendar.xml">所有</a>
-				</li>
-				<li class="current_page_item">
-					<a title="年">
-						<xsl:value-of select="concat(year/@year,'年')" />
 					</a>
 				</li>
 			</xsl:when>
@@ -159,7 +129,7 @@
 						<a class="home" title="所有" href="calendar.xml">所有</a>
 					</li>
 					<li class="page_item">
-						<a title="最近一年" href="{$upd/@year}.xml">最近一年</a>
+						<a title="最近一年" href="calendar.xml?{$upd/@year}">最近一年</a>
 					</li>
 					<li class="page_item">
 						<a title="最近一月" href="{$upd/@year}{$upd/@month}.xml">最近一月</a>

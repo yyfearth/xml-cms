@@ -328,8 +328,6 @@ class Calendar extends DOMDocument {
 			$daynode->insertBefore($postheader, $daynode->firstChild);
 			// save post.xml
 			$post->writexml();
-			// create year.xml
-			$this->createYear($year);
 			// update month.xml
 			$month = new Month($year, $month);
 			$month->add($post);
@@ -446,20 +444,7 @@ class Calendar extends DOMDocument {
 		}
 	}
 
-	public function createYear($year) {
-		$file = $year.'.xml';
-		if (!file_exists($file)) {
-			$xml = new DOMDocument('1.0', 'utf-8');
-			$xml->appendChild( new DOMProcessingInstruction('xml-stylesheet',
-				'href="style/year.xsl" type="text/xsl"'));
-			$node = $xml->createElement('year');
-			$node->setAttribute('year', $year); // @year
-			$xml->appendChild($node);
-			$xml->save($file);
-		}
-	}
-
-	public function delYear($year) {
+	public function delYear($year) { // del year*.xml not year.xml
 		if($year instanceof DOMNode) {
 			$yearnode = $year;
 			$year = $yearnode->getAttribute('year');
@@ -526,8 +511,6 @@ class Month extends DOMDocument {
 				$this->root->insertBefore($daynode, $this->root->firstChild);
 			}
 			$daynode->insertBefore($postsummary, $daynode->firstChild);
-			// create day xml
-			$this->createDayXML($day);
 		} else { //mod
 			$oldpost = $this->xpath->query("/descendant::post[@id='$oldid']");
 			if ($oldpost->length) {
@@ -563,7 +546,6 @@ class Month extends DOMDocument {
 				$day->removeChild($post);
 				if($day->childNodes->length == 0) { // empty day to clear
 					$day = $this->root->removeChild($day);
-					$this->deleteDayXML($day->getAttribute('day')); // del day.xml
 				}
 				Post::del($id); // del post.xml
 				// save this xml
@@ -574,28 +556,6 @@ class Month extends DOMDocument {
 
 	public function writexml() {
 		$this->save($this->xmlfile);
-	}
-
-	public function createDayXML($day) {
-		$file = $this->year.$this->month.$day.'.xml';
-		if (!file_exists($file)) {
-			$xml = new DOMDocument('1.0', 'utf-8');
-			$xml->appendChild( new DOMProcessingInstruction('xml-stylesheet',
-				'href="style/day.xsl" type="text/xsl"'));
-			$node = $xml->createElement('day');
-			$node->setAttribute('year', $this->year); // @year
-			$node->setAttribute('month', $this->month); // @month
-			$node->setAttribute('day', $day); // @day
-			$xml->appendChild($node);
-			$xml->save($file);
-		}
-	}
-
-	public function deleteDayXML($year, $month, $day) {
-		$file = $year.$month.$day.'.xml';
-		if (file_exists($file)) {
-			unlink($file);
-		}
 	}
 
 }

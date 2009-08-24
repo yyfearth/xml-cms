@@ -24,7 +24,9 @@
 						<xsl:value-of select="author" />
 					</span>
 					<span class="category">
-						<xsl:value-of select="category" />
+						<a href="category.xml?{category}" title="{category}">
+							<xsl:value-of select="category" />
+						</a>
 					</span>
 					<xsl:if test="tag">
 						<span class="tags">

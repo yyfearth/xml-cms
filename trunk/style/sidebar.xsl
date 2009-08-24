@@ -3,11 +3,11 @@
 	<xsl:variable name="cal" select="document('../calendar.xml')"/>
 	<xsl:template match="/">
 		<div id="sidebar" class="sidebar">
-			<div class="widget">
+			<!--div class="widget">
 				<div class="title">迷你日历</div>
 				
 				<div class="fixed"></div>
-			</div>
+			</div-->
 			<div class="widget">
 				<div class="title">广告赞助</div>
 
@@ -18,7 +18,7 @@
 				<ul>
 					<xsl:for-each select="$cal/descendant::post[position()&lt;6]">
 						<li>
-							<a href="{@id}.xml" title="{title}">
+							<a href="{@id}.xml" title="『{title}』于{datetime/@year}-{datetime/@month}-{datetime/@day} {datetime/@time}发表">
 								<xsl:value-of select="title"/>
 							</a>
 						</li>
