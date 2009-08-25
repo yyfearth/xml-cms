@@ -3,14 +3,85 @@
 	<xsl:variable name="cal" select="document('../calendar.xml')"/>
 	<xsl:template match="/">
 		<div id="sidebar" class="sidebar">
-			<!--div class="widget">
-				<div class="title">迷你日历</div>
-				
-				<div class="fixed"></div>
-			</div-->
 			<div class="widget">
 				<div class="title">广告赞助</div>
 
+				<div class="fixed"></div>
+			</div>
+			<div class="widget">
+				<div class="title">迷你日历</div>
+				<div id="minical"></div>
+				<xsl:variable name="datecal">
+					<xsl:for-each select="$cal//month">
+						<xsl:sort select="concat(../@year,@month)" data-type="number" />
+						<xsl:value-of select="concat(../@year,@month,':{')"/>
+						<xsl:for-each select="day">
+							<xsl:value-of select="@day"/>:
+							<xsl:value-of select="count(./post)"/>
+							<xsl:if test="not(position()=last())">,</xsl:if>
+						</xsl:for-each>
+						<xsl:text>}</xsl:text>
+						<xsl:if test="not(position()=last())">,</xsl:if>
+					</xsl:for-each>
+				</xsl:variable>
+				<xsl:variable name="curmonth">
+					<xsl:choose>
+						<xsl:when test="/month">
+							<xsl:value-of select="concat(//@year,//@month)"/>
+						</xsl:when>
+						<xsl:when test="/post">
+							<xsl:value-of select="concat(//datetime/@year,//datetime/@month)"/>
+						</xsl:when>
+						<xsl:otherwise>0</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
+				<script type="text/javascript">
+					var curmonth =
+					<xsl:value-of select="$curmonth"/>,
+					datecal = {
+					<xsl:value-of select="$datecal"/>};
+					<![CDATA[
+function prevmonth() {
+	var y = Math.floor(curmonth/100), m = curmonth % 100 - 1;
+	if (m == 0) { y--; m = 12 }
+	curmonth = y * 100 + m;
+	return showcal(curmonth);
+}
+function nextmonth() {
+	var y = Math.floor(curmonth/100), m = curmonth % 100 + 1;
+	if (m == 13) { y++; m = 1 }
+	curmonth = y * 100 + m;
+	return showcal(curmonth);
+}
+function showcal(cur) {
+	if (!cur) cur = new Date().getFullYear() * 100 + new Date().getMonth() + 1;
+	var y = Math.floor(cur/100), m = cur % 100;
+	curmonth = y * 100 + m;
+	var h = '<table><caption><a href="#" title="上月" onclick="return prevmonth()">&lt;</a> ' +
+		((cur in datecal)? '<a href="' + cur + '.xml">' + y + '年' + m + '月</a> ' : y + '年' + m + '月') +
+		'<a href="#" title="下月" onclick="return nextmonth()">&gt;</a></caption>' +
+		'<tr><th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th></tr>\n<tr>';
+	var date = new Date(y,m-1,1);
+	for (var i = 0; i < date.getDay(); i++) h += '<td></td>';
+	for (var d = 1; d <= new Date(y,m,0).getDate(); d++) {
+		date = new Date(y,m-1,d);
+		if (date.getDay() == 0) h += '</tr><tr>';
+		h += '<td ' + (
+				(new Date().toDateString() == date.toDateString())?
+				'class="today" title="今天"' : ''
+			) + '>' + (
+				(cur in datecal && d in datecal[cur]) ?
+				'<a href="' + cur + '.xml?' + d + '" title="' + d + ' 日 有 ' + datecal[cur][d] + ' 篇日志"> ' + d + '</a>'
+				: d
+			) + '</td>';
+	}
+	h += '</tr></table>';
+	document.getElementById('minical').innerHTML = h;
+	return false;
+}
+showcal(curmonth);
+					]]>
+				</script>
 				<div class="fixed"></div>
 			</div>
 			<div class="widget">

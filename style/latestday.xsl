@@ -15,10 +15,10 @@
 				<xsl:for-each select="document($xml)/descendant::post">
 					<xsl:choose>
 						<xsl:when test="position()=1">
-							<a href="{$id}.xml" style="position:relative;z-index=-100;">
+							<a href="{$id}.xml" style="position:relative;">
 								<img style="margin:0px 0px -30px -10px;" title="最近更新" alt="最近更新" src="theme/img/new.jpg" />
 							</a>
-							<div style="z-index=10;position:relative;">
+							<div style="position:relative;background-color:transparent;">
 								<xsl:apply-templates select="document($latestxml)/post" />
 							</div>
 							<p>

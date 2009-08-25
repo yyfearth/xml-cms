@@ -1,4 +1,4 @@
-﻿/* static START */
+/* static START */
 * {
 	margin:0px;
 	padding:0px;
@@ -901,4 +901,36 @@ a.imageswitcher_button:hover {
 .day {
 	background-color: #ffffff;
 	padding: 1px;
+}
+
+#minical {
+	margin:5px;
+	font-size: small;
+}
+
+#minical caption {
+	padding:3px;
+	font-weight:bold;
+}
+
+#minical th {
+	text-align:center;
+	width:20px;
+	padding:2px;
+	background-color:#eeeeee;
+}
+
+#minical td {
+	text-align:center;
+	padding:2px;
+}
+
+#minical td a {
+	font-weight:bold;
+}
+
+#minical .today {
+	font-weight:bold;
+	color:white;
+	background-color:#aaaaff;
 }

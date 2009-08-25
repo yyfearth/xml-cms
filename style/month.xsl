@@ -46,5 +46,21 @@ if (/^\??\d{2}(#|$)/.test(location.search)) {
 			<xsl:apply-templates select="." />
 		</xsl:for-each>
 	</xsl:template>
-	
+
+	<xsl:template name="nav">
+		<li class="page_item">
+			<a class="home" title="所有" href="calendar.xml">所有</a>
+		</li>
+		<li class="page_item">
+			<a title="{month/@year}年" href="calendar.xml?{month/@year}">
+				<xsl:value-of select="concat(month/@year,'年')" />
+			</a>
+		</li>
+		<li class="current_page_item">
+			<a title="{month/@month}月" href="{month/@year}{month/@month}.xml">
+				<xsl:value-of select="concat(month/@month,'月')" />
+			</a>
+		</li>
+	</xsl:template>
+
 </xsl:stylesheet>
