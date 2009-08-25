@@ -77,72 +77,27 @@
 	</xsl:template>
 
 	<xsl:template name="nav">
-		<xsl:choose>
-			<xsl:when test="/post">
-				<li class="page_item">
-					<a class="home" title="所有" href="calendar.xml">所有</a>
-				</li>
-				<xsl:variable name="dt" select="post/datetime" />
-				<li class="page_item">
-					<a title="{$dt/@year}年" href="calendar.xml?{$dt/@year}">
-						<xsl:value-of select="concat($dt/@year,'年')" />
-					</a>
-				</li>
-				<li class="page_item">
-					<a title="{$dt/@month}月" href="{$dt/@year}{$dt/@month}.xml">
-						<xsl:value-of select="concat($dt/@month,'月')" />
-					</a>
-				</li>
-				<li class="page_item">
-					<a title="{$dt/@day}日" href="{$dt/@year}{$dt/@month}.xml?{$dt/@day}">
-						<xsl:value-of select="concat($dt/@day,'日')" />
-					</a>
-				</li>
-				<li class="current_page_item">
-					<a href="#view" title="浏览" onclick="return false">
-						<xsl:value-of select="concat($dt/@time,'日志')" />
-					</a>
-				</li>
-			</xsl:when>
-			<xsl:when test="/month">
-				<li class="page_item">
-					<a class="home" title="所有" href="calendar.xml">所有</a>
-				</li>
-				<li class="page_item">
-					<a title="{month/@year}年" href="calendar.xml?{month/@year}">
-						<xsl:value-of select="concat(month/@year,'年')" />
-					</a>
-				</li>
-				<li class="current_page_item">
-					<a title="{month/@month}月" href="{month/@year}{month/@month}.xml">
-						<xsl:value-of select="concat(month/@month,'月')" />
-					</a>
-				</li>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:variable name="upd" select="document(concat('../lastupdate.xml?',generate-id()))/post" />
-				<xsl:if test="$upd/@id">
-					<li class="page_item">
-						<xsl:if test="/calendar">
-							<xsl:attribute name="class">current_page_item</xsl:attribute>
-						</xsl:if>
-						<a class="home" title="所有" href="calendar.xml">所有</a>
-					</li>
-					<li class="page_item">
-						<a title="最近一年" href="calendar.xml?{$upd/@year}">最近一年</a>
-					</li>
-					<li class="page_item">
-						<a title="最近一月" href="{$upd/@year}{$upd/@month}.xml">最近一月</a>
-					</li>
-					<li class="page_item">
-						<a href="latestday.xml" title="最近一天">最近一天</a>
-					</li>
-					<li class="page_item">
-						<a title="最新一篇日志" href="{$upd/@id}.xml">最新一篇日志</a>
-					</li>
-					<!--li><a class="lastmenu" href="javascript:void(0);"></a></li-->
-				</xsl:if>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:variable name="upd" select="document(concat('../lastupdate.xml?',generate-id()))/post" />
+		<li class="page_item">
+			<xsl:if test="/calendar">
+				<xsl:attribute name="class">current_page_item</xsl:attribute>
+			</xsl:if>
+			<a class="home" title="所有" href="calendar.xml">所有</a>
+		</li>
+		<xsl:if test="$upd/@id">
+			<li class="page_item">
+				<a title="最近一年" href="calendar.xml?{$upd/@year}">最近一年</a>
+			</li>
+			<li class="page_item">
+				<a title="最近一月" href="{$upd/@year}{$upd/@month}.xml">最近一月</a>
+			</li>
+			<li class="page_item">
+				<a href="latestday.xml" title="最近一天">最近一天</a>
+			</li>
+			<li class="page_item">
+				<a title="最新一篇日志" href="{$upd/@id}.xml">最新一篇日志</a>
+			</li>
+			<!--li><a class="lastmenu" href="javascript:void(0);"></a></li-->
+		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>
