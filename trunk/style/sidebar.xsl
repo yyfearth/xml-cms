@@ -54,20 +54,21 @@ function nextmonth() {
 	return showcal(curmonth);
 }
 function showcal(cur) {
-	if (!cur) cur = new Date().getFullYear() * 100 + new Date().getMonth() + 1;
+	var now = new Date(), nowstr = now.toDateString();
+	if (!cur) cur = now.getFullYear() * 100 + now.getMonth() + 1;
 	var y = Math.floor(cur/100), m = cur % 100;
 	curmonth = y * 100 + m;
 	var h = '<table><caption><a href="#" title="上月" onclick="return prevmonth()">&lt;</a> ' +
-		((cur in datecal)? '<a href="' + cur + '.xml">' + y + '年' + m + '月</a> ' : y + '年' + m + '月') +
+		((cur in datecal)? '<a href="' + cur + '.xml">' + y + '年' + m + '月</a>' : y + '年' + m + '月') +
 		'<a href="#" title="下月" onclick="return nextmonth()">&gt;</a></caption>' +
 		'<tr><th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th></tr>\n<tr>';
 	var date = new Date(y,m-1,1);
-	for (var i = 0; i < date.getDay(); i++) h += '<td></td>';
+	if (date.getDay()) h += '<td colspan="' + date.getDay() + '"></td>';
 	for (var d = 1; d <= new Date(y,m,0).getDate(); d++) {
 		date = new Date(y,m-1,d);
 		if (date.getDay() == 0) h += '</tr><tr>';
 		h += '<td ' + (
-				(new Date().toDateString() == date.toDateString())?
+				(nowstr == date.toDateString())?
 				'class="today" title="今天"' : ''
 			) + '>' + (
 				(cur in datecal && d in datecal[cur]) ?
