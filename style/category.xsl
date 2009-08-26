@@ -4,19 +4,25 @@
 	<xsl:variable name="cal" select="document('../calendar.xml')"/>
 
 	<xsl:template match="cat">
-		<xsl:for-each select="$cal/descendant::post">
-			<xsl:sort select="@id" order="descending" data-type="number" />
-			<xsl:apply-templates select="." />
-		</xsl:for-each>
+		<div id="cats">
+			<xsl:for-each select="$cal/descendant::post">
+				<xsl:sort select="@id" order="descending" data-type="number" />
+				<xsl:apply-templates select="." />
+			</xsl:for-each>
+		</div>
 		<script type="text/javascript">
 		<![CDATA[
 if (location.search) {
 	var cat = decodeURIComponent(location.search.substr(1));
 	document.title = cat + ' - XmlCMS';
 	document.getElementById('curcat').innerHTML = cat;
-	var posts = document.getElementsByName('postdiv'), count = 0;
+	var posts = document.getElementsByName('post'), count = 0;
+	if (!posts.length) // IE
+		posts = document.getElementById('cats').childNodes;
 	for (var i = 0; i < posts.length; i++) {
-		if (posts[i].getAttribute('cat') == cat)
+		if (posts[i].getAttribute('name') != 'post')
+			continue;
+		else if (posts[i].getAttribute('cat') == cat)
 			count++;
 		else
 			posts[i].style.display = 'none';
@@ -28,7 +34,7 @@ if (location.search) {
 	</xsl:template>
 
 	<xsl:template match="post">
-		<div id="{@id}" name="postdiv" cat="{category}" class="post">
+		<div id="{@id}" cat="{category}" class="post" name="post">
 			<h2>
 				<a title="{title}" href="{@id}.xml">
 					<xsl:value-of select="title" />

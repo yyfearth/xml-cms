@@ -5,31 +5,37 @@
 
 	<xsl:template match="/month">
 		<xsl:variable name="showday" select="count(day[count(post)>1])>0"/>
-		<xsl:for-each select="day">
-			<xsl:sort select="@day" order="descending" data-type="number" />
-			<div class="day" name="daydiv" day="{@day}">
-				<xsl:if test="$showday">
-					<a href="?{@day}">
-						<xsl:value-of select="concat(@day,'日')" />
-					</a>
-					<span style="float:right;color:#999999">
-						<xsl:value-of select="concat('(共 ',count(descendant::post),' 篇)')" />
-					</span>
-				</xsl:if>
-				<xsl:apply-templates select="." />
-			</div>
-		</xsl:for-each>
+		<div id="month">
+			<xsl:for-each select="day">
+				<xsl:sort select="@day" order="descending" data-type="number" />
+				<div class="day" name="day" day="{@day}">
+					<xsl:if test="$showday">
+						<span style="float:right;color:#999999">
+							<xsl:value-of select="concat('(共 ',count(descendant::post),' 篇)')" />
+						</span>
+						<a href="?{@day}">
+							<xsl:value-of select="concat(@day,'日')" />
+						</a>
+					</xsl:if>
+					<xsl:apply-templates select="." />
+				</div>
+			</xsl:for-each>
+		</div>
 		<script type="text/javascript">
 			<![CDATA[
 if (/^\??\d{2}(#|$)/.test(location.search)) {
 	var day = location.search.substr(1);
-	document.title = day + ' - XmlCMS';
+	// document.title = day + ' - XmlCMS';
 	var html = document.getElementById('menus').innerHTML;
 	document.getElementById('menus').innerHTML = html.replace('current_page_item', 'page_item') +
 		'<li class="current_page_item"><a title="' + day + '日">' + day + '日</a></li>';
 	var days = document.getElementsByName('daydiv'), count = 0;
+	if (!days .length) // IE
+		days  = document.getElementById('month').childNodes;
 	for (var i = 0; i < days.length; i++) {
-		if (days[i].getAttribute('day') == day)
+		if (days[i].getAttribute('name') != 'day')
+			continue;
+		else if (days[i].getAttribute('day') == day)
 			count++;
 		else
 			days[i].style.display = 'none';

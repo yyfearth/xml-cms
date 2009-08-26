@@ -6,10 +6,12 @@
 		<xsl:if test="count(year)=0">
 			<h2 align="center">没有日志</h2>
 		</xsl:if>
-		<xsl:for-each select="year">
-			<xsl:sort select="@year" order="descending" data-type="number" />
-			<xsl:apply-templates select="." />
-		</xsl:for-each>
+		<div id="calendar">
+			<xsl:for-each select="year">
+				<xsl:sort select="@year" order="descending" data-type="number" />
+				<xsl:apply-templates select="." />
+			</xsl:for-each>
+		</div>
 		<script type="text/javascript">
 		<![CDATA[
 if (/^\??\d{4}(#|$)/.test(location.search)) {
@@ -19,8 +21,12 @@ if (/^\??\d{4}(#|$)/.test(location.search)) {
 		'<li class="page_item"><a class="home" title="所有" href="calendar.xml">所有</a></li>' +
 		'<li class="current_page_item"><a title="' + year + '年">' + year + '年</a></li>';
 	var years = document.getElementsByName('yeardiv'), count = 0;
+	if (!years .length) // IE
+		years  = document.getElementById('calendar').childNodes;
 	for (var i = 0; i < years.length; i++) {
-		if (years[i].getAttribute('year') == year)
+		if (years[i].getAttribute('name') != 'year')
+			continue;
+		else if (years[i].getAttribute('year') == year)
 			count++;
 		else
 			years[i].style.display = 'none';
@@ -32,24 +38,24 @@ if (/^\??\d{4}(#|$)/.test(location.search)) {
 	</xsl:template>
 
 	<xsl:template match="year">
-		<div class="year" name="yeardiv" year="{@year}">
-			<a href="?{@year}">
-				<xsl:value-of select="concat(@year,'年')" />
-			</a>
+		<div class="year" name="year" year="{@year}">
 			<span style="float:right;color:#999999">
 				<xsl:value-of select="concat('(共 ',count(descendant::post),' 篇)')" />
 			</span>
+			<a href="?{@year}">
+				<xsl:value-of select="concat(@year,'年')" />
+			</a>
 			<xsl:variable name="showmonth" select="count(month[count(day/post)>1])>0"/>
 			<xsl:for-each select="month">
 				<xsl:sort select="@month" order="descending" data-type="number" />
 				<div class="month">
 					<xsl:if test="$showmonth">
-						<a href="{../@year}{@month}.xml">
-							<xsl:value-of select="concat(@month,'月')" />
-						</a>
 						<span style="float:right;color:#999999">
 							<xsl:value-of select="concat('(共 ',count(descendant::post),' 篇)')" />
 						</span>
+						<a href="{../@year}{@month}.xml">
+							<xsl:value-of select="concat(@month,'月')" />
+						</a>
 					</xsl:if>
 					<xsl:apply-templates select="." />
 				</div>
@@ -63,12 +69,12 @@ if (/^\??\d{4}(#|$)/.test(location.search)) {
 			<xsl:sort select="@day" order="descending" data-type="number" />
 			<div class="day">
 				<xsl:if test="$showday">
-					<a href="{../../@year}{../@month}.xml?{@day}">
-						<xsl:value-of select="concat(@day,'日')" />
-					</a>
 					<span style="float:right;color:#999999">
 						<xsl:value-of select="concat('(共 ',count(descendant::post),' 篇)')" />
 					</span>
+					<a href="{../../@year}{../@month}.xml?{@day}">
+						<xsl:value-of select="concat(@day,'日')" />
+					</a>
 				</xsl:if>
 				<xsl:apply-templates select="." />
 			</div>
