@@ -934,3 +934,19 @@ a.imageswitcher_button:hover {
 	color:white;
 	background-color:#aaaaff;
 }
+
+#browserwarnning {
+	background-color:red;
+	font-weight:bolder;
+	margin:5px;
+	padding:5px;
+}
+#ie6notify {
+	background-color:#9999ff;
+	font-weight:bolder;
+	margin:5px;
+	padding:5px;
+}
+#ie6notify a, #browserwarnning a {
+	color:white;
+}

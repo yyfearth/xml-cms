@@ -11,7 +11,6 @@
 				<title>XmlCMS</title>
 				<!-- style START -->
 				<link rel="stylesheet" href="theme/style.css" type="text/css" media="screen" />
-				<!--[if IE 6]> <link rel="stylesheet" href="theme/ie6.css" type="text/css" media="screen" /> <![endif]-->
 				<!-- style END -->
 				<link rel="index" title="XmlCMS" href="http://yyfearth.com/XmlCMS" />
 				<link rel="shortcut icon" href="images/XmlCMS.ico" type="image/x-icon" />
