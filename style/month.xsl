@@ -23,7 +23,7 @@
 		</div>
 		<script type="text/javascript">
 			<![CDATA[
-if (/^\??\d{2}(#|$)/.test(location.search)) {
+if (/^\??\d\d?(#|$)/.test(location.search)) {
 	var day = location.search.substr(1);
 	// document.title = day + ' - XmlCMS';
 	var html = document.getElementById('menus').innerHTML;
