@@ -108,26 +108,29 @@ showcal(curmonth);
 			</div>
 			<div class="widget">
 				<div class="title">日志分类</div>
-				<xsl:variable name="cats">
-					<xsl:for-each select="$cal/descendant::post/category">
-						<xsl:sort select="text()" order="descending" />
-						<xsl:text>'</xsl:text>
-						<xsl:value-of select="."/>
-						<xsl:text>',</xsl:text>
-					</xsl:for-each>
-					<xsl:text>null</xsl:text>
-				</xsl:variable>
-				<script type="text/javascript">
-					var cats = [
-					<xsl:value-of select="$cats"/>];
-					<![CDATA[
-document.writeln('<ul>');
+				<div id="minicats">
+					<xsl:variable name="cats">
+						<xsl:for-each select="$cal/descendant::post/category">
+							<xsl:sort select="text()" order="descending" />
+							<xsl:text>'</xsl:text>
+							<xsl:value-of select="."/>
+							<xsl:text>',</xsl:text>
+						</xsl:for-each>
+						<xsl:text>null</xsl:text>
+					</xsl:variable>
+					<script type="text/javascript">
+						var cats = [
+						<xsl:value-of select="$cats"/>];
+						<![CDATA[
+var hcats = '<ul>';
 for (var i = 0; i < cats.length - 1; i++)
 	if (cats[i] != cats[i+1])
-		document.writeln('<li><a href="category.xml?' + cats[i] + '">'+ cats[i] + '</a></li>');
-document.writeln('</ul>');
-					]]>
-				</script>
+		hcats += '<li><a href="category.xml?' + cats[i] + '">' + cats[i] + '</a></li>';
+hcats += '</ul>';
+document.getElementById('minicats').innerHTML = hcats;
+						]]>
+					</script>
+				</div>
 				<div class="fixed"></div>
 			</div>
 			<div class="widget">
