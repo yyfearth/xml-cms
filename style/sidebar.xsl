@@ -13,7 +13,10 @@ else if(/msie 6/i.test(navigator.userAgent))
 			</script>
 			<div class="widget">
 				<div class="title">广告赞助</div>
-
+				<script type="text/javascript" src="script/showads.js"></script>
+				<div id="ad_0" style="float:right"></div>
+				<div id="ad_1"></div>
+				<script type="text/javascript">showad(0);showad(1)</script>
 				<div class="fixed"></div>
 			</div>
 			<div class="widget">
