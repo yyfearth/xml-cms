@@ -69,6 +69,7 @@ function alterField(name) {
 				field.alter(false);
 				break;
 		}
+		return true;
 	};
 	field.alter = function (c) {
 		if (c) {
@@ -98,6 +99,7 @@ theform.onsubmit = function () {
 			field.disabled = true; // not submit
 		}
 	}
+	return true;
 };
 
 function getXHtml(str) {
