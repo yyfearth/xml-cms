@@ -20,9 +20,9 @@ if (/^\??\d{4}(#|$)/.test(location.search)) {
 	document.getElementById('menus').innerHTML =
 		'<li class="page_item"><a class="home" title="所有" href="calendar.xml">所有</a></li>' +
 		'<li class="current_page_item"><a title="' + year + '年">' + year + '年</a></li>';
-	var years = document.getElementsByName('yeardiv'), count = 0;
-	if (!years .length) // IE
-		years  = document.getElementById('calendar').childNodes;
+	var years = document.getElementsByName('year'), count = 0;
+	if (!years.length) // IE
+		year = document.getElementById('calendar').childNodes;
 	for (var i = 0; i < years.length; i++) {
 		if (years[i].getAttribute('name') != 'year')
 			continue;

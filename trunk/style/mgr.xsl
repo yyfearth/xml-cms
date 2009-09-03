@@ -59,7 +59,8 @@
 								</form>
 								<script type="text/javascript" src="script/cipher.js"></script>
 								<script type="text/javascript">
-									var server_timestamp = <xsl:value-of select="$mgrts/timestamp" />;
+									var server_timestamp =
+									<xsl:value-of select="$mgrts/timestamp" />;
 									<![CDATA[
 var timestamp = Date.parse(new Date())/1000;
 server_timestamp = parseInt(server_timestamp);
@@ -107,6 +108,71 @@ username.focus();
 						</h1>
 					</xsl:otherwise>
 				</xsl:choose>
+			</xsl:when>
+			<xsl:when test="//newpost">
+				<div id="mask" style="background-color:gray;filter:alpha(opacity=50);opacity:0.5;display:none;position:absolute;left:0px;top:0px;width:100%;height:100%;z-index:1000"></div>
+				<form id="postform" action="mgr.php?act=add" method="post">
+					<table style="margin: auto; width: 90%">
+						<caption>
+							<h1>新建日志</h1>
+						</caption>
+						<tr style="font-weight:bolder;">
+							<td>标题：</td>
+							<td>
+								<input style="font-weight:bold;" id="title_field" name="title" maxlength="30" />
+							</td>
+						</tr>
+						<tr>
+							<td>时间：</td>
+							<td>
+								<input class="date" id="datetime_field" name="datetime" maxlength="20" value="当前日期时间"/>
+							</td>
+						</tr>
+						<tr>
+							<td>作者：</td>
+							<td>
+								<input class="author" id="author_field" name="author" maxlength="20"/>
+							</td>
+						</tr>
+						<tr>
+							<td>分类：</td>
+							<td>
+								<input class="category" id="category_field" maxlength="10" name="category" value="默认分类" />
+							</td>
+						</tr>
+						<tr>
+							<td>标签：</td>
+							<td>
+								<input class="tags" id="tags_field" name="tags" maxlength="100" />
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">概要：</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<textarea class="summary" id="summary_field" name="summary" rows="5" style="width:90%"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">内容：</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<textarea id="content_field" name="content" rows="10" style="width:90%"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="submit" value=" 提交 "/>
+							</td>
+							<td>
+								<input type="reset" value=" 清除 "/>
+							</td>
+						</tr>
+					</table>
+				</form>
+				<script type="text/javascript" src="script/newpost.js"></script>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:variable name="admin" select="$mgr/admin" />

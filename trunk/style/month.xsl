@@ -29,9 +29,9 @@ if (/^\??\d\d?(#|$)/.test(location.search)) {
 	var html = document.getElementById('menus').innerHTML;
 	document.getElementById('menus').innerHTML = html.replace('current_page_item', 'page_item') +
 		'<li class="current_page_item"><a title="' + day + '日">' + day + '日</a></li>';
-	var days = document.getElementsByName('daydiv'), count = 0;
-	if (!days .length) // IE
-		days  = document.getElementById('month').childNodes;
+	var days = document.getElementsByName('day'), count = 0;
+	if (!days.length) // IE
+		days = document.getElementById('month').childNodes;
 	for (var i = 0; i < days.length; i++) {
 		if (days[i].getAttribute('name') != 'day')
 			continue;
