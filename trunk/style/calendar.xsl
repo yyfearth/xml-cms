@@ -22,7 +22,8 @@ if (/^\??\d{4}(#|$)/.test(location.search)) {
 		'<li class="current_page_item"><a title="' + year + '年">' + year + '年</a></li>';
 	var years = document.getElementsByName('year'), count = 0;
 	if (!years.length) // IE
-		year = document.getElementById('calendar').childNodes;
+		years = document.getElementById('calendar').childNodes;
+		alert(years.length)
 	for (var i = 0; i < years.length; i++) {
 		if (years[i].getAttribute('name') != 'year')
 			continue;
@@ -96,29 +97,27 @@ if (/^\??\d{4}(#|$)/.test(location.search)) {
 				</a>
 			</h2>
 			<div class="content">
-				<p class="under">
-					<span class="date">
-						<xsl:value-of select="concat(datetime/@year,'-',datetime/@month,'-',datetime/@day,' ',datetime/@time)" />
+				<span class="date">
+					<xsl:value-of select="concat(datetime/@year,'-',datetime/@month,'-',datetime/@day,' ',datetime/@time)" />
+				</span>
+				<span class="author">
+					<xsl:value-of select="author" />
+				</span>
+				<span class="category">
+					<a href="category.xml?{category}" title="{category}">
+						<xsl:value-of select="category" />
+					</a>
+				</span>
+				<xsl:if test="tag">
+					<span class="tags">
+						<xsl:for-each select="tag">
+							<xsl:if test="position()!=1">, </xsl:if>
+							<xsl:value-of select="." />
+						</xsl:for-each>
 					</span>
-					<span class="author">
-						<xsl:value-of select="author" />
-					</span>
-					<span class="category">
-						<a href="category.xml?{category}" title="{category}">
-							<xsl:value-of select="category" />
-						</a>
-					</span>
-					<xsl:if test="tag">
-						<span class="tags">
-							<xsl:for-each select="tag">
-								<xsl:if test="position()!=1">, </xsl:if>
-								<xsl:value-of select="." />
-							</xsl:for-each>
-						</span>
-					</xsl:if>
-				</p>
-				<div class="fixed"></div>
+				</xsl:if>
 			</div>
+			<div class="fixed"></div>
 		</div>
 	</xsl:template>
 
