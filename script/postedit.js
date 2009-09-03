@@ -2,6 +2,10 @@ var names = ['title', 'date', 'author', 'category', 'tags', 'summary', 'content'
 var theform = document.getElementById('editform');
 var submit = document.getElementById('submit');
 submit.disabled = true;
+function intval(v) {
+	var i = parseInt(v.toString());
+	return isNaN(i)?0:i;
+}
 function alterField(name) {
 	var area = document.getElementById(name + '_area');
 	var field = document.getElementById(name + '_field');
@@ -20,12 +24,12 @@ function alterField(name) {
 	field.onfocus = function () {
 		if (istextfield) {
 			field.size = field.value.replace(/[^\u0000-\u00ff]/g,"aa").length + 5;
-		} else {
+		} else if (Math.abs(intval(field.style.height) - field.scrollHeight) > 6) {
 			field.style.overflowY = 'visible';
 			field.style.height = field.scrollHeight + 'px';
-			setTimeout(function () {
+			/*setTimeout(function () {
 				field.style.height = field.scrollHeight + 'px';
-			}, 100);
+			}, 100);*/
 		}
 	}
 	area.onclick = function () {

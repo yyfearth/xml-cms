@@ -331,10 +331,11 @@ input.textfield, textarea {
 .post .editlinks {
 	background:url(img/icons.gif) no-repeat;
 	padding-left:22px;
-	height:16px;
-	line-height:16px;
-	display:block;
+	margin-right:15px;
+	margin-bottom:3px;
+	display:inline-block;
 	font-size:11px;
+	line-height:16px;
 }
 .post .act {
 	height:16px;
@@ -355,7 +356,6 @@ input.textfield, textarea {
 }
 .post .date {
 	background-position:0 -48px;
-	float:left;
 }
 .post .editpost {
 	background-position:0 -64px;
@@ -382,14 +382,6 @@ input.textfield, textarea {
 }
 .post .content p {
 	margin-bottom:10px;
-}
-.post .content .under {
-	height:16px;
-	line-height:16px;
-}
-.post .content .under span {
-	float:left;
-	margin-right:15px;
 }
 .post .content h4 {
 	color:#080;
