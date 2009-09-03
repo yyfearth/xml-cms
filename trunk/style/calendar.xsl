@@ -23,7 +23,6 @@ if (/^\??\d{4}(#|$)/.test(location.search)) {
 	var years = document.getElementsByName('year'), count = 0;
 	if (!years.length) // IE
 		years = document.getElementById('calendar').childNodes;
-		alert(years.length)
 	for (var i = 0; i < years.length; i++) {
 		if (years[i].getAttribute('name') != 'year')
 			continue;
