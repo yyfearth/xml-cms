@@ -2,55 +2,58 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<xsl:variable name="cal" select="document('../calendar.xml')"/>
 	<xsl:template match="/">
-		<div id="sidebar" class="sidebar">
-			<script type="text/javascript">
+		<xsl:if test="not(err|msg)">
+			<div id="sidebar" class="sidebar">
+				<script type="text/javascript">
 				<![CDATA[
 if(/msie [0-5]\.|firefox\/1|mozilla\/[0-3]|opera\/[0-7]/i.test(navigator.userAgent))
 	document.writeln('<div id="browserwarnning"><a href="browsers.html">您所使用的浏览器版本过低，可能无法正常的浏览本页面！如果想要浏览完整的效果，请更新或更换浏览器。</a></div>');
 else if(/msie 6/i.test(navigator.userAgent))
 	document.writeln('<div id="ie6notify"><a href="browsers.html">您所使用的 Microsoft Internet Explorer 6.0 浏览器，无法正确的处理本页面中某些细节，为了更好的浏览体验，更为了互联网应用的美好明天，强烈推荐您升级您的浏览器！</a></div>');
 				]]>
-			</script>
-			<div class="widget">
-				<div class="title">广告赞助</div>
-				<script type="text/javascript" src="script/showads.js"></script>
-				<div id="ad_0" style="float:right"></div>
-				<div id="ad_1"></div>
-				<script type="text/javascript">showad(0);showad(1)</script>
-				<div class="fixed"></div>
-			</div>
-			<div class="widget">
-				<div class="title">迷你日历</div>
-				<div id="minical"></div>
-				<xsl:variable name="datecal">
-					<xsl:for-each select="$cal//month">
-						<xsl:sort select="concat(../@year,@month)" data-type="number" />
-						<xsl:value-of select="concat(../@year,@month,':{')"/>
-						<xsl:for-each select="day">
-							<xsl:value-of select="@day"/>:
-							<xsl:value-of select="count(./post)"/>
+				</script>
+				<xsl:if test="not(mgr|post/@edit)">
+					<div class="widget">
+						<div class="title">广告赞助</div>
+						<script type="text/javascript" src="script/showads.js"></script>
+						<div id="ad_0" style="float:right"></div>
+						<div id="ad_1"></div>
+						<script type="text/javascript">showad(0);showad(1)</script>
+						<div class="fixed"></div>
+					</div>
+				</xsl:if>
+				<div class="widget">
+					<div class="title">迷你日历</div>
+					<div id="minical"></div>
+					<xsl:variable name="datecal">
+						<xsl:for-each select="$cal//month">
+							<xsl:sort select="concat(../@year,@month)" data-type="number" />
+							<xsl:value-of select="concat(../@year,@month,':{')"/>
+							<xsl:for-each select="day">
+								<xsl:value-of select="@day"/>:
+								<xsl:value-of select="count(./post)"/>
+								<xsl:if test="not(position()=last())">,</xsl:if>
+							</xsl:for-each>
+							<xsl:text>}</xsl:text>
 							<xsl:if test="not(position()=last())">,</xsl:if>
 						</xsl:for-each>
-						<xsl:text>}</xsl:text>
-						<xsl:if test="not(position()=last())">,</xsl:if>
-					</xsl:for-each>
-				</xsl:variable>
-				<xsl:variable name="curmonth">
-					<xsl:choose>
-						<xsl:when test="/month">
-							<xsl:value-of select="concat(//@year,//@month)"/>
-						</xsl:when>
-						<xsl:when test="/post">
-							<xsl:value-of select="concat(//datetime/@year,//datetime/@month)"/>
-						</xsl:when>
-						<xsl:otherwise>0</xsl:otherwise>
-					</xsl:choose>
-				</xsl:variable>
-				<script type="text/javascript">
+					</xsl:variable>
+					<xsl:variable name="curmonth">
+						<xsl:choose>
+							<xsl:when test="/month">
+								<xsl:value-of select="concat(//@year,//@month)"/>
+							</xsl:when>
+							<xsl:when test="/post/datetime">
+								<xsl:value-of select="concat(//datetime/@year,//datetime/@month)"/>
+							</xsl:when>
+							<xsl:otherwise>0</xsl:otherwise>
+						</xsl:choose>
+					</xsl:variable>
+					<script type="text/javascript">
 					var curmonth =
-					<xsl:value-of select="$curmonth"/>,
+						<xsl:value-of select="$curmonth"/>,
 					datecal = {
-					<xsl:value-of select="$datecal"/>};
+						<xsl:value-of select="$datecal"/>};
 					<![CDATA[
 function prevmonth() {
 	var y = Math.floor(curmonth/100), m = curmonth % 100 - 1;
@@ -93,37 +96,37 @@ function showcal(cur) {
 }
 showcal(curmonth);
 					]]>
-				</script>
-				<div class="fixed"></div>
-			</div>
-			<div class="widget">
-				<div class="title">最近更新</div>
-				<ul>
-					<xsl:for-each select="$cal/descendant::post[position()&lt;6]">
-						<li>
-							<a href="{@id}.xml" title="『{title}』于{datetime/@year}-{datetime/@month}-{datetime/@day} {datetime/@time}发表">
-								<xsl:value-of select="title"/>
-							</a>
-						</li>
-					</xsl:for-each>
-				</ul>
-				<div class="fixed"></div>
-			</div>
-			<div class="widget">
-				<div class="title">日志分类</div>
-				<div id="minicats">
-					<xsl:variable name="cats">
-						<xsl:for-each select="$cal/descendant::post/category">
-							<xsl:sort select="text()" order="descending" />
-							<xsl:text>'</xsl:text>
-							<xsl:value-of select="."/>
-							<xsl:text>',</xsl:text>
+					</script>
+					<div class="fixed"></div>
+				</div>
+				<div class="widget">
+					<div class="title">最近更新</div>
+					<ul>
+						<xsl:for-each select="$cal/descendant::post[position()&lt;6]">
+							<li>
+								<a href="{@id}.xml" title="『{title}』于{datetime/@year}-{datetime/@month}-{datetime/@day} {datetime/@time}发表">
+									<xsl:value-of select="title"/>
+								</a>
+							</li>
 						</xsl:for-each>
-						<xsl:text>null</xsl:text>
-					</xsl:variable>
-					<script type="text/javascript">
+					</ul>
+					<div class="fixed"></div>
+				</div>
+				<div class="widget">
+					<div class="title">日志分类</div>
+					<div id="minicats">
+						<xsl:variable name="cats">
+							<xsl:for-each select="$cal/descendant::post/category">
+								<xsl:sort select="text()" order="descending" />
+								<xsl:text>'</xsl:text>
+								<xsl:value-of select="."/>
+								<xsl:text>',</xsl:text>
+							</xsl:for-each>
+							<xsl:text>null</xsl:text>
+						</xsl:variable>
+						<script type="text/javascript">
 						var cats = [
-						<xsl:value-of select="$cats"/>];
+							<xsl:value-of select="$cats"/>];
 						<![CDATA[
 var hcats = '<ul>';
 for (var i = 0; i < cats.length - 1; i++)
@@ -132,16 +135,17 @@ for (var i = 0; i < cats.length - 1; i++)
 hcats += '</ul>';
 document.getElementById('minicats').innerHTML = hcats;
 						]]>
-					</script>
+						</script>
+					</div>
+					<div class="fixed"></div>
 				</div>
-				<div class="fixed"></div>
-			</div>
-			<div class="widget">
-				<div class="title" style="text-align:center">
-					<a href="mgr.xml">后台管理</a>
+				<div class="widget">
+					<div class="title" style="text-align:center">
+						<a href="mgr.xml">后台管理</a>
+					</div>
+					<div class="fixed"></div>
 				</div>
-				<div class="fixed"></div>
 			</div>
-		</div>
+		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>
