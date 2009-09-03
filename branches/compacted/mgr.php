@@ -708,7 +708,7 @@ if (array_key_exists('req', $_GET)) {
 					header ("Content-type: text/xml; charset=utf-8"); //XML
 					echo '<?xml version="1.0" encoding="utf-8" ?>
 <?xml-stylesheet href="style/postedit.xsl" type="text/xsl"?>
-<post id="'.$_GET['id'].'"/>';
+<post edit="ture" id="'.$_GET['id'].'"/>';
 				} else printxml ("<err href='mgr.xml'>没有要编辑的日志！</err>");
 			} catch (Exception $e) {
 				die ('<err>'.$e->getMessage().'</err>');
