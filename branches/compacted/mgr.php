@@ -27,7 +27,7 @@ class Post {
 		if (array_key_exists($name, $array) && strlen($array[$name])) {
 			$val = $array[$name];
 			$xml = new DOMDocument('1.0', 'utf-8');
-			if (!$xml->loadXML("<$name>$val</$name>"))
+			if (!@$xml->loadXML("<$name>$val</$name>"))
 				$val = self::xmlStringSafe($val);
 			return "<$name>$val</$name>";
 		} else return '';
