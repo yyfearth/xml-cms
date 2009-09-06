@@ -29,7 +29,7 @@
 									<div  align="center">
 										<table style="margin:10px">
 											<caption>
-												<h1>登 录</h1>
+												<h1>登　录</h1>
 											</caption>
 											<tr>
 												<td>
@@ -41,62 +41,28 @@
 											</tr>
 											<tr>
 												<td>
-													<lable for="password">密 码：</lable>
+													<lable for="password">密　码：</lable>
 												</td>
 												<td>
 													<input type="password" id="password" name="password" tabindex="2" style="width:90%" />
 												</td>
 											</tr>
 											<tr>
-												<td></td>
+												<td><!--
+													<input id="autologin" name="autologin" type="checkbox" style="vertical-align:middle" />
+													<label for="autologin" style="padding:2px;vertical-align:middle">自动</label>-->
+												</td>
 												<td style="padding:10px">
-													<input type="submit" value="登录" />　
-													<input type="reset" value="重填" />
+													<input type="submit" value=" 登 录 " />　
+													<input type="reset" value=" 重 填 " />
 												</td>
 											</tr>
 										</table>
 									</div>
 								</form>
-								<script type="text/javascript" src="script/cipher.js"></script>
+								<script type="text/javascript" src="script/mgr.js"></script>
 								<script type="text/javascript">
-									var server_timestamp =
-									<xsl:value-of select="$mgrts/timestamp" />;
-									<![CDATA[
-var timestamp = Date.parse(new Date())/1000;
-server_timestamp = parseInt(server_timestamp);
-if (!isNaN(server_timestamp) && Math.abs(timestamp - server_timestamp) > 30) {
-	timestamp = server_timestamp;
-	setInterval('timestamp++', 1000);
-} else {
-	timestamp = 0;
-}
-
-var theform = document.getElementById('login_form');
-var username = document.getElementById('username');
-var password = document.getElementById('password');
-theform.onsubmit = function() {
-	if (username.value.length < 3) {
-		alert('请输入正确的用户名！')
-		username.focus();
-	} else if (password.value.length == 0) {
-		alert('请输入密码！')
-		password.focus();
-	} else {
-		username = username.value.toLowerCase();
-		password = password.value;
-		var ts = timestamp.toString();
-		if (ts.length != 10)
-			ts = (Date.parse(new Date()).toString()).substr(0, 10);
-		var hash = lhex2b36(hmac_sha1(username + 'XmlCMS' + ts, sha1(password)) + ts);
-		if (hash.length == 40)
-			location.href = 'mgr.php?act=login&user=' + username + '&hash=' + hash;
-		else
-			alert('提交安全信息出错！');
-	}
-	return false;
-}
-username.focus();
-								]]>
+									<xsl:value-of select="concat('mgr_login(',$mgrts/timestamp,');')" />
 								</script>
 							</xsl:otherwise>
 						</xsl:choose>
@@ -185,6 +151,7 @@ username.focus();
 				</div>
 				<xsl:choose>
 					<xsl:when test="count($cal/descendant::post)>0">
+						<script type="text/javascript" src="script/mgr.js"></script>
 						<table name="postlist" style="margin:auto;border:1px solid white;">
 							<caption>
 								<h1>日志列表</h1>
@@ -192,10 +159,10 @@ username.focus();
 							<thead>
 								<tr>
 									<th>
-										<input id="chkall" type="checkbox" title="全选/清除" />
+										<input id="chkall" type="checkbox" title="全选/清除" onclick="chkall()" />
 									</th>
-									<th>标题</th>
-									<th>分类</th>
+									<th style="min-width:60px">标题</th>
+									<th style="min-width:60px">分类</th>
 									<th>作者</th>
 									<th>发布时间</th>
 									<th>标签</th>
@@ -249,50 +216,6 @@ username.focus();
 								</xsl:for-each>
 							</tbody>
 						</table>
-						<script type="text/javascript">
-							<![CDATA[
-var iptchkall = document.getElementById('chkall');
-function chkall() {
-	var val = iptchkall.checked;
-	var ipt = document.getElementsByTagName('input');
-	for (var i=0;i<ipt.length;i++) {
-		var chk=ipt[i];
-		if (chk.type == 'checkbox' && chk.id != 'chkall') {
-			chk.checked = val;
-			if (val)
-				chk.onclick = function() { if(!this.checked) clrchkall(); };
-			else
-				chk.onclick = null;
-		}
-	}
-}
-iptchkall.onclick = chkall;
-function clrchkall() {
-	iptchkall.onclick = null;
-	iptchkall.checked = false;
-	iptchkall.onclick = chkall;
-}
-function del(id) {
-	if (id == null) {
-		var ipt = document.getElementsByTagName('input');
-		var delids = [];
-		for (var i = 0; i < ipt.length; i++) {
-			var chk = ipt[i];
-			if (chk.type == 'checkbox' && chk.id != 'chkall' && chk.checked) {
-				delids.push(chk.id.match(/\d+/));
-			}
-		}
-		if (delids.length) {
-			if (confirm('确定删除所选的全部日志吗？'))
-				location.href = "mgr.php?act=del&id=" + delids.join(',')
-		} else alert ('没有选择任何日志！');
-	} else {
-		if (confirm('确定删除所选日志吗？'))
-			location.href = "mgr.php?act=del&id=" + id;
-	}
-}
-							]]>
-						</script>
 					</xsl:when>
 					<xsl:otherwise>
 						<div align="center">
