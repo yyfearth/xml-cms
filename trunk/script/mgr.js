@@ -1,4 +1,4 @@
-
+/* ========== cipher ========== */
 function core_sha1(x, len) {
 	/* append padding */
 	x[len >> 5] |= 0x80 << (24 - len % 32);
@@ -110,3 +110,82 @@ function lhex2b36(hex) {
 
 function sha1(s) { return binb2hex(core_sha1(str2binb(s), s.length * 8)); }
 function hmac_sha1(key, data) { return binb2hex(core_hmac_sha1(key, data)); }
+
+/* ========== login ========== */
+function mgr_login (server_timestamp) {
+	var timestamp = Date.parse(new Date())/1000;
+	server_timestamp = parseInt(server_timestamp);
+	if (!isNaN(server_timestamp) && Math.abs(timestamp - server_timestamp) > 30) {
+		timestamp = server_timestamp;
+		setInterval('timestamp++', 1000);
+	} else {
+		timestamp = 0;
+	}
+
+	var theform = document.getElementById('login_form');
+	var username = document.getElementById('username');
+	var password = document.getElementById('password');
+	theform.onsubmit = function() {
+		if (username.value.length < 3) {
+			alert('请输入正确的用户名！')
+			username.focus();
+		} else if (password.value.length == 0) {
+			alert('请输入密码！')
+			password.focus();
+		} else {
+			username = username.value.toLowerCase();
+			password = password.value;
+			var ts = timestamp.toString();
+			if (ts.length != 10)
+				ts = (Date.parse(new Date()).toString()).substr(0, 10);
+			var hash = lhex2b36(hmac_sha1(username + 'XmlCMS' + ts, sha1(password)) + ts);
+			if (hash.length == 40)
+				location.href = 'mgr.php?act=login&user=' + username + '&hash=' + hash;
+			else
+				alert('提交安全信息出错！');
+		}
+		return false;
+	}
+	username.focus();
+}
+
+/* ========== method ========== */
+function chkall() {
+	var val = document.getElementById('chkall').checked;
+	var ipt = document.getElementsByTagName('input');
+	for (var i=0;i<ipt.length;i++) {
+		var chk=ipt[i];
+		if (chk.type == 'checkbox' && chk.id != 'chkall') {
+			chk.checked = val;
+			if (val)
+				chk.onclick = function() { if(!this.checked) clrchkall(); };
+			else
+				chk.onclick = null;
+		}
+	}
+}
+function clrchkall() {
+	var iptchkall = document.getElementById('chkall');
+	iptchkall.onclick = null;
+	iptchkall.checked = false;
+	iptchkall.onclick = chkall;
+}
+function del(id) {
+	if (id == null) {
+		var ipt = document.getElementsByTagName('input');
+		var delids = [];
+		for (var i = 0; i < ipt.length; i++) {
+			var chk = ipt[i];
+			if (chk.type == 'checkbox' && chk.id != 'chkall' && chk.checked) {
+				delids.push(chk.id.match(/\d+/));
+			}
+		}
+		if (delids.length) {
+			if (confirm('确定删除所选的全部日志吗？'))
+				location.href = "mgr.php?act=del&id=" + delids.join(',')
+		} else alert ('没有选择任何日志！');
+	} else {
+		if (confirm('确定删除所选日志吗？'))
+			location.href = "mgr.php?act=del&id=" + id;
+	}
+}
