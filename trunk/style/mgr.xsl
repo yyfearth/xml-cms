@@ -175,7 +175,7 @@
 									<td>
 										<a href="javascript:del()">删除所选</a>
 									</td>
-									<td>
+									<td colspan="2">
 										<a href="newpost.xml">新建日志</a>
 									</td>
 								</tr>
