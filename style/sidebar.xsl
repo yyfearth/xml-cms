@@ -6,12 +6,15 @@
 			<div id="sidebar" class="sidebar">
 				<script type="text/javascript">
 				<![CDATA[
-if(/msie [0-5]\.|firefox\/1|mozilla\/[0-3]|opera\/[0-7]/i.test(navigator.userAgent))
+if(/msie [0-5]\.|firefox\/[0-2]|mozilla\/[0-3]|opera\/[0-7]/i.test(navigator.userAgent))
 	document.writeln('<div id="browserwarnning"><a href="browsers.html">您所使用的浏览器版本过低，可能无法正常的浏览本页面！如果想要浏览完整的效果，请更新或更换浏览器。</a></div>');
 else if(/msie 6/i.test(navigator.userAgent))
 	document.writeln('<div id="ie6notify"><a href="browsers.html">您所使用的 Microsoft Internet Explorer 6.0 浏览器，无法正确的处理本页面中某些细节，为了更好的浏览体验，更为了互联网应用的美好明天，强烈推荐您升级您的浏览器！</a></div>');
 				]]>
 				</script>
+				<noscript>
+					<div id="browserwarnning">您的浏览器禁用了或不支持Javascript脚本支持，将无法正常的浏览本页面！如果想要浏览完整的效果，请开启Javascript脚本支持或更换浏览器。</div>
+				</noscript>
 				<xsl:if test="not(mgr|post/@edit)">
 					<div class="widget">
 						<div class="title">广告赞助</div>
@@ -19,6 +22,7 @@ else if(/msie 6/i.test(navigator.userAgent))
 						<div id="ad_0" style="float:right"></div>
 						<div id="ad_1"></div>
 						<script type="text/javascript">showad(0);showad(1)</script>
+						<noscript>Javascript脚本无法运行！</noscript>
 						<div class="fixed"></div>
 					</div>
 				</xsl:if>
@@ -97,6 +101,7 @@ function showcal(cur) {
 showcal(curmonth);
 					]]>
 					</script>
+					<noscript>Javascript脚本无法运行！</noscript>
 					<div class="fixed"></div>
 				</div>
 				<div class="widget">
@@ -136,6 +141,7 @@ hcats += '</ul>';
 document.getElementById('minicats').innerHTML = hcats;
 						]]>
 						</script>
+						<noscript>Javascript脚本无法运行！</noscript>
 					</div>
 					<div class="fixed"></div>
 				</div>

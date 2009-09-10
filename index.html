@@ -7,7 +7,7 @@
 		<link rel="shortcut icon" href="images/XmlCMS.ico" type="image/x-icon" />
 		<link rel="icon" href="images/XmlCMS.ico" type="image/x-icon" />
 		<script type="text/javascript">
-			var pass = !/msie [0-5]\.|firefox\/1|mozilla\/[0-3]|opera\/[0-7]/i.test(navigator.userAgent);
+			var pass = !/msie [0-5]\.|firefox\/[0-2]|mozilla\/[0-3]|opera\/[0-7]/i.test(navigator.userAgent);
 			if (pass) location.replace("latestday.xml");
 		</script>
 	</head>
@@ -15,13 +15,14 @@
 		<noscript>
 			<p style="font-size:20pt;color:red;text-align:center">
 				您的浏览器不支持或禁用了JavaScript!<br />
-				系统无法自动跳转到最近更新信息。
+				系统无法自动跳转到最近更新信息。<br />
+				没有JavaScript支持，系统部分功能会被禁用！
 			</p>
 		</noscript>
 		<p style="font-size:15pt;color:red;text-align:center">
 			注意：本系统支持的浏览器的最低版本<br />
-			Internet Explorer 6.0<br />
-			Mozilla Firefox 2.0<br />
+			Internet Explorer 6.0（无明显缺陷）<br />
+			Mozilla Firefox 2.0（页面显示有缺陷）<br />
 			Opera 9.0<br />
 			Google Chrome 1.0<br />
 			Apple Safari 3.0<br />
@@ -29,6 +30,8 @@
 			基于IE内核的浏览器如 遨游、TheWorld、TT，依照系统IE版本≥6.0<br />
 			如果您的浏览器低于以上版本或使用其他不支持XML+XSL的核心，<br />
 			<span style="font-weight:bold">将无法正常的使用本系统！</span><br />
+			推荐您使用本系统推荐的浏览器↓<br />
+			→<a href="browsers.html">点击查看『推荐的浏览器』页面</a>←
 		</p>
 		<p id="warnning" style="display:none" style="font-size:12pt;color:green;text-align:center">
 			您的浏览器经过检测，不符合以上要求！<br />
