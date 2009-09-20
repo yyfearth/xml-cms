@@ -64,7 +64,7 @@
 						<!-- footer START -->
 						<div id="footer">
 							<a id="gotop" href="#top" onclick="document.body.scrollTop=document.documentElement.scrollTop=0;return false;">置顶</a>
-							<div id="copyright">版权所有 ® 2009 yyfearth.com</div>
+							<div id="copyright"><a href="http://yyfearth.com/XmlCMS">XmlCMS 1.0 RC</a> 版权所有 ® 2009 yyfearth.com</div>
 						</div>
 						<!-- footer END -->
 					</div>

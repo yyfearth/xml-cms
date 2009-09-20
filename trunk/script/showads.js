@@ -15,6 +15,7 @@ var ads = {
 		alimama_height : 240,
 		alimama_type : 2
 	},
+	domains: /yyfearth.com|yyfearth.w44.08host.com/i,
 	list : [{
 		alimama_pid : "mm_10080744_272224_356175"
 	}, {
@@ -38,12 +39,20 @@ function showad(id) {
 			ads.paras[pni] = ads.list[id][pni];
 	} else //id is directly alimama_pid
 		ads.paras.alimama_pid = id;
-	var adhtml = '<html style="overflow:hidden"><body style="margin:0px;overflow:hidden"><script type="text/javascript">\n';
-	for (var pn in ads.paras)
-		adhtml += pn + '="' + ads.paras[pn] + '";\n';
-	adhtml += '</' +
-	'script>\n<script src="http://a.alimama.cn/inf.js" type="text/javascript"></' +
+	var adhtml = '<html style="overflow:hidden"><body style="margin:0px;overflow:hidden">';
+	if (ads.domains.test(document.domain)) {
+		adhtml += '<script type="text/javascript">';
+		for (var pn in ads.paras)
+			adhtml += pn + '="' + ads.paras[pn] + '";';
+		adhtml += '</' +
+	'script><script src="http://a.alimama.cn/inf.js" type="text/javascript"></' +
 	'script></body></html>';
+	} else adhtml += '<div style="position:absolute;top:0px;left:0px;width:' +
+		(ads.paras.alimama_width - 2) + 'px;height:' +
+		(ads.paras.alimama_height - 2) + 'px;background-color:#' +
+		ads.paras.alimama_bgcolor + ';border:1px solid #' +
+		ads.paras.alimama_bordercolor + ';font-size:10px"><center style="margin-top:' +
+		(ads.paras.alimama_height / 2 - 10) + 'px">此域名广告已被屏蔽！</center></div>';
 	var ifr = ad_div.firstChild || document.getElementById('fra_ad_' + id);
 	if (ifr) {
 		ifr.width = ads.paras.alimama_width;
