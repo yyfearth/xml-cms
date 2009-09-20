@@ -18,11 +18,13 @@ else if(/msie 6/i.test(navigator.userAgent))
 				<xsl:if test="not(mgr|post/@edit)">
 					<div class="widget">
 						<div class="title">广告赞助</div>
-						<script type="text/javascript" src="script/showads.js"></script>
-						<div id="ad_0" style="float:right"></div>
-						<div id="ad_1"></div>
-						<script type="text/javascript">showad(0);showad(1)</script>
-						<noscript>Javascript脚本无法运行！</noscript>
+						<div id="ads_group" style="margin:5px">
+							<script type="text/javascript" src="script/showads.js"></script>
+							<div id="ad_0" style="float:right"></div>
+							<div id="ad_1"></div>
+							<script type="text/javascript">showad(0);showad(1)</script>
+							<noscript>Javascript脚本无法运行！</noscript>
+						</div>
 						<div class="fixed"></div>
 					</div>
 				</xsl:if>
