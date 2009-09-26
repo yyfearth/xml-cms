@@ -25,6 +25,7 @@
 			<![CDATA[
 if (/^\??\d\d?(#|$)/.test(location.search)) {
 	var day = location.search.substr(1);
+	if (day.length == 1) day = '0' + day;
 	// document.title = day + ' - XmlCMS';
 	var html = document.getElementById('menus').innerHTML;
 	document.getElementById('menus').innerHTML = html.replace('current_page_item', 'page_item') +
